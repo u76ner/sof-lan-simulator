@@ -1,6 +1,5 @@
 import { createMuiTheme } from "@material-ui/core/styles";
 import teal from "@material-ui/core/colors/teal";
-import { size, SizeTheme, SizeThemeOption } from "./size";
 
 const primary = teal[400];
 
@@ -30,23 +29,6 @@ const theme = createMuiTheme({
       fontWeight: 300,
     },
   },
-  extra: {
-    size,
-  },
 });
 
 export default theme;
-
-declare module "@material-ui/core/styles/createMuiTheme" {
-  interface Theme {
-    extra: {
-      size: SizeTheme;
-    };
-  }
-  // allow configuration using "createMuiTheme"
-  interface ThemeOptions {
-    extra?: {
-      size?: SizeThemeOption;
-    };
-  }
-}
