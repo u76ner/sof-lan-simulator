@@ -1,7 +1,7 @@
 import React from "react";
 
 const MainLayout: React.FC = ({ children }) => {
-  return <section>{children}</section>;
+  return <div>{children}</div>;
 };
 
 export default MainLayout;
