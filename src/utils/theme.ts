@@ -8,26 +8,6 @@ const theme = createMuiTheme({
     primary: {
       main: primary,
     },
-    secondary: {
-      main: "#ffb300",
-    },
-  },
-
-  typography: {
-    fontFamily: `"Roboto", "Noto Sans JP"`,
-    fontSize: 12,
-    h3: {
-      fontWeight: 300,
-    },
-    h4: {
-      fontWeight: 300,
-    },
-    h5: {
-      fontWeight: 300,
-    },
-    h6: {
-      fontWeight: 300,
-    },
   },
 });
 
