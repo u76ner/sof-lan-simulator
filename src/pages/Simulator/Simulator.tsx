@@ -1,7 +1,7 @@
 import React from "react";
 
 const Simulator: React.FC = () => {
-  return <>hoge</>;
+  return <>叙情シミュレータつくるよ</>;
 };
 
 export default Simulator;
