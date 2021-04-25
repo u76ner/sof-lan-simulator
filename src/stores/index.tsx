@@ -5,7 +5,7 @@ import {
   TypedUseSelectorHook,
 } from "react-redux";
 
-import { data, Music } from "utils/data";
+import { musics, Music } from "utils/data";
 
 // TODO: フローティング解除とかやりたい
 type Operation =
@@ -48,7 +48,7 @@ const simulatorSlice = createSlice({
       isClassic: true,
     },
     sections: [],
-    music: data[0],
+    music: musics[0],
   } as SimulatorState,
   reducers: {
     setDefaultState(state, action: PayloadAction<SimulatorState>) {

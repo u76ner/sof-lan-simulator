@@ -5,6 +5,7 @@ export const op31JojoSPA: Section[] = [
     bpm: 180,
     isMain: true,
     isEasyToOperate: "difficult",
+    comment: "最初だよ",
   },
   {
     bpm: 200,

@@ -17,7 +17,7 @@ export type Music = {
   data: Section[];
 };
 
-export const data: Music[] = [
+export const musics: Music[] = [
   {
     title: "-",
     minBpm: 0,
