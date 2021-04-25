@@ -7,15 +7,6 @@ import {
 
 import { songs } from "utils/data";
 
-// TODO: フローティング解除とかやりたい
-type Operation =
-  | "none" // 何もしない
-  | "scratchWithStart" // 皿チョン
-  | "changeHighSpeed" // ハイスピ変更
-  | "hideSuddenPlus" // サドプラ消す
-  | "showSuddenPlus" // サドプラ出す
-  | "hideAndShowSuddenPlus"; // サドプラ出し入れ
-
 type InitialState = {
   white: number; // 白数字
   lift: number; // LIFT
@@ -26,7 +17,14 @@ type InitialState = {
 };
 
 type OperateState = {
-  operation: Operation; // 操作
+  // TODO: フローティング解除とかやりたい
+  operation:
+    | "none" // 何もしない
+    | "scratchWithStart" // 皿チョン
+    | "changeHighSpeed" // ハイスピ変更
+    | "hideSuddenPlus" // サドプラ消す
+    | "showSuddenPlus" // サドプラ出す
+    | "hideAndShowSuddenPlus"; // サドプラ出し入れ; // 操作
   visualization: "slower" | "inRange" | "faster"; // 色変える
 } & Omit<InitialState, "isClassic">;
 
