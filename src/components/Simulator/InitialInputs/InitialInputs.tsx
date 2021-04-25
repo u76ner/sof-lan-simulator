@@ -35,8 +35,8 @@ export const InitialInputs: React.FC<InitialInputsProps> = () => {
           </Box>
           <FormControl variant="outlined">
             <Select defaultValue={songs[0].title}>
-              {songs.map((song) => (
-                <MenuItem key={song.title} value={song.title}>
+              {songs.map((song, idx) => (
+                <MenuItem key={song.title} value={idx}>
                   {song.title}
                 </MenuItem>
               ))}

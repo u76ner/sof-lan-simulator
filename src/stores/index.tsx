@@ -5,7 +5,7 @@ import {
   TypedUseSelectorHook,
 } from "react-redux";
 
-import { songs, Song } from "utils/data";
+import { songs } from "utils/data";
 
 // TODO: フローティング解除とかやりたい
 type Operation =
@@ -25,15 +25,15 @@ type InitialState = {
   isClassic: boolean; // クラシックハイスピードかどうか
 };
 
-type SectionState = {
+type OperateState = {
   operation: Operation; // 操作
   visualization: "slower" | "inRange" | "faster"; // 色変える
 } & Omit<InitialState, "isClassic">;
 
 type SimulatorState = {
   initial: InitialState;
-  sections: SectionState[]; // 状態
-  music: Song;
+  operations: OperateState[]; // 状態
+  songIdx: number;
 };
 
 const simulatorSlice = createSlice({
@@ -47,8 +47,8 @@ const simulatorSlice = createSlice({
       isFloating: true,
       isClassic: true,
     },
-    sections: [],
-    music: songs[0],
+    operations: [],
+    songIdx: 0,
   } as SimulatorState,
   reducers: {
     setDefaultState(state, action: PayloadAction<SimulatorState>) {
