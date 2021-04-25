@@ -46,10 +46,10 @@ export const SimulatorTable: React.FC<SimulatorTableProps> = () => {
           </TableHead>
           <TableBody>
             {/* TODO: Reduxの値で書き換える */}
-            {musics[1].data.map((val, idx) => (
+            {musics[1].data.map((section, idx) => (
               <TableRow key={idx}>
                 <TableCell>
-                  <Typography>{val.bpm}</Typography>
+                  <Typography>{section.bpm}</Typography>
                 </TableCell>
                 <TableCell>
                   <Typography>TODO: select box</Typography>
@@ -64,7 +64,9 @@ export const SimulatorTable: React.FC<SimulatorTableProps> = () => {
                   <Typography>TODO: ハイスピード値</Typography>
                 </TableCell>
                 <TableCell>
-                  {!!val.comment && <Typography>{val.comment}</Typography>}
+                  {!!section.comment && (
+                    <Typography>{section.comment}</Typography>
+                  )}
                 </TableCell>
               </TableRow>
             ))}
