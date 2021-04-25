@@ -198,19 +198,17 @@ export type Music = {
   data: Section[];
 };
 
-export const data: {
-  [key: string]: Music;
-} = {
-  notSelected: {
+export const data: Music[] = [
+  {
     title: "-",
     minBpm: 0,
     maxBpm: 0,
     data: [],
   },
-  op31JojoSPA: {
+  {
     title: "op.31 叙情(SPA)",
     minBpm: 100,
     maxBpm: 350,
     data: op31JojoSPA,
   },
-};
+];

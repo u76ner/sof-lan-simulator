@@ -48,7 +48,7 @@ const simulatorSlice = createSlice({
       isClassic: true,
     },
     sections: [],
-    music: data["notSelected"],
+    music: data[0],
   } as SimulatorState,
   reducers: {
     setDefaultState(state, action: PayloadAction<SimulatorState>) {
