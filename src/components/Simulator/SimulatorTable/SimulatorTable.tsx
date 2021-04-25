@@ -10,7 +10,7 @@ import {
   TableCell,
 } from "@material-ui/core";
 
-import { musics } from "utils/data";
+import { songs } from "utils/data";
 
 type SimulatorTableProps = {};
 
@@ -46,7 +46,7 @@ export const SimulatorTable: React.FC<SimulatorTableProps> = () => {
           </TableHead>
           <TableBody>
             {/* TODO: Reduxの値で書き換える */}
-            {musics[1].data.map((section, idx) => (
+            {songs[1].data.map((section, idx) => (
               <TableRow key={idx}>
                 <TableCell>
                   <Typography>{section.bpm}</Typography>

@@ -13,7 +13,7 @@ import {
   Checkbox,
 } from "@material-ui/core";
 
-import { musics } from "utils/data";
+import { songs } from "utils/data";
 
 type InitialInputsProps = {};
 
@@ -34,10 +34,10 @@ export const InitialInputs: React.FC<InitialInputsProps> = () => {
             <Typography align="right">曲名</Typography>
           </Box>
           <FormControl variant="outlined">
-            <Select defaultValue={musics[0].title}>
-              {musics.map((music) => (
-                <MenuItem key={music.title} value={music.title}>
-                  {music.title}
+            <Select defaultValue={songs[0].title}>
+              {songs.map((song) => (
+                <MenuItem key={song.title} value={song.title}>
+                  {song.title}
                 </MenuItem>
               ))}
             </Select>

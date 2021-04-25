@@ -10,14 +10,14 @@ export type Section = {
   comment?: string;
 };
 
-export type Music = {
+export type Song = {
   title: string;
   minBpm: number;
   maxBpm: number;
   data: Section[];
 };
 
-export const musics: Music[] = [
+export const songs: Song[] = [
   {
     title: "-",
     minBpm: 0,
