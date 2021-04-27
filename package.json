@@ -28,13 +28,13 @@
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
-    "rules": {
-      "no-unused-vars": "off"
-    },
     "extends": [
       "react-app",
       "react-app/jest"
-    ]
+    ],
+    "rules": {
+      "no-unused-vars": "off"
+    }
   },
   "browserslist": {
     "production": [
