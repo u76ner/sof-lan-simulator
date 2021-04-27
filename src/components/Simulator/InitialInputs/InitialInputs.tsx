@@ -8,7 +8,6 @@ import {
   MenuItem,
   Typography,
   OutlinedInput,
-  FormGroup,
   FormControlLabel,
   Checkbox,
 } from "@material-ui/core";
