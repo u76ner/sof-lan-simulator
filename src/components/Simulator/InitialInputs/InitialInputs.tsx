@@ -72,18 +72,16 @@ export const InitialInputs: React.FC<InitialInputsProps> = () => {
             }}
           />
         </Box>
-        <FormGroup>
-          {/* FHSかどうか */}
-          <FormControlLabel
-            control={<Checkbox name="isFloating" />}
-            label="フローティングハイスピードを使用"
-          />
-          {/* クラシックハイスピかどうか */}
-          <FormControlLabel
-            control={<Checkbox name="isClassic" />}
-            label="クラシックハイスピードを使用"
-          />
-        </FormGroup>
+        {/* FHSかどうか */}
+        <FormControlLabel
+          control={<Checkbox name="isFloating" />}
+          label="フローティングハイスピードを使用"
+        />
+        {/* クラシックハイスピかどうか */}
+        <FormControlLabel
+          control={<Checkbox name="isClassic" />}
+          label="クラシックハイスピードを使用"
+        />
         {/* 緑数字 */}
         <Box display="flex" alignItems="center">
           <Box width={LABEL_WIDTH} pr={2}>
