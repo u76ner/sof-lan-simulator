@@ -72,6 +72,7 @@ export const InitialInputs: React.FC<InitialInputsProps> = () => {
           />
         </Box>
         {/* FHSかどうか */}
+        {/* FormControlいる？ */}
         <FormControlLabel
           control={<Checkbox name="isFloating" />}
           label="フローティングハイスピードを使用"

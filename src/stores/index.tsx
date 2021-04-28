@@ -56,6 +56,13 @@ const simulatorSlice = createSlice({
   },
 });
 
+// カンペ
+// useSelector, useDispatch, actionsをimportする
+// const state = useSelector((state) => state);
+// or const hoge = useSelector((state) => state.hoge)
+// const dispatch = useDispatch();
+// dispatch(actions.fuga(fugaのpayload))
+
 const store = configureStore({
   reducer: simulatorSlice.reducer,
 });
