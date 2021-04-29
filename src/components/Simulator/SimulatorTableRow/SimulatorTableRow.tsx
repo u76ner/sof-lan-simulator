@@ -58,7 +58,7 @@ export const SimulatorTableRow: React.FC<SimulatorTableRowProps> = (props) => {
         currentOperation === "hideAndShowSuddenPlus" ? (
           <OutlinedInput disabled defaultValue="-" />
         ) : currentOperation === "scratchWithStart" ? (
-          <OutlinedInput type="number" />
+          <OutlinedInput type="number" defaultValue={0} />
         ) : (
           <FormControl variant="outlined">
             <Select defaultValue="up">
