@@ -5,23 +5,27 @@ import {
   Container,
   FormControl,
   Select,
+  RadioGroup,
+  Radio,
   MenuItem,
   Typography,
   OutlinedInput,
   FormControlLabel,
-  Checkbox,
 } from "@material-ui/core";
 
+import { actions, useDispatch } from "stores";
 import { songs } from "utils/data";
 
 type InitialInputsProps = {};
 
-const LABEL_WIDTH = 150;
+const LABEL_WIDTH = 250;
 
 // 曲選べる、白数字、LIFT、FHSかどうか、クラシックハイスピかどうか、開始時の緑数字、緑数字の上限、下限
 
 export const InitialInputs: React.FC<InitialInputsProps> = () => {
   const classes = useStyles();
+
+  const dispatch = useDispatch();
 
   return (
     <Box display="flex" flexDirection="column">
@@ -33,7 +37,14 @@ export const InitialInputs: React.FC<InitialInputsProps> = () => {
             <Typography align="right">曲名</Typography>
           </Box>
           <FormControl variant="outlined">
-            <Select defaultValue={songs[0].title}>
+            <Select
+              defaultValue={0}
+              onChange={(event) => {
+                dispatch(
+                  actions.setSong(parseInt(event.target.value as string))
+                );
+              }}
+            >
               {songs.map((song, idx) => (
                 <MenuItem key={song.title} value={idx}>
                   {song.title}
@@ -72,16 +83,41 @@ export const InitialInputs: React.FC<InitialInputsProps> = () => {
           />
         </Box>
         {/* FHSかどうか */}
-        {/* FormControlいる？ */}
-        <FormControlLabel
-          control={<Checkbox name="isFloating" />}
-          label="フローティングハイスピードを使用"
-        />
+        <Box display="flex" alignItems="center">
+          <Box width={LABEL_WIDTH} pr={2}>
+            <Typography align="right">フローティングハイスピード</Typography>
+          </Box>
+          <RadioGroup name="isFloating" defaultValue="true">
+            <FormControlLabel
+              value="true"
+              control={<Radio />}
+              label="使用する"
+            />
+            <FormControlLabel
+              value="false"
+              control={<Radio />}
+              label="使用しない"
+            />
+          </RadioGroup>
+        </Box>
         {/* クラシックハイスピかどうか */}
-        <FormControlLabel
-          control={<Checkbox name="isClassic" />}
-          label="クラシックハイスピードを使用"
-        />
+        <Box display="flex" alignItems="center">
+          <Box width={LABEL_WIDTH} pr={2}>
+            <Typography align="right">クラシックハイスピード</Typography>
+          </Box>
+          <RadioGroup name="isClassic" defaultValue="true">
+            <FormControlLabel
+              value="true"
+              control={<Radio />}
+              label="使用する"
+            />
+            <FormControlLabel
+              value="false"
+              control={<Radio />}
+              label="使用しない"
+            />
+          </RadioGroup>
+        </Box>
         {/* 緑数字 */}
         <Box display="flex" alignItems="center">
           <Box width={LABEL_WIDTH} pr={2}>

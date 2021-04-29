@@ -10,6 +10,8 @@ import {
   TableCell,
 } from "@material-ui/core";
 
+import { SimulatorTableRow } from "../SimulatorTableRow";
+import { useSelector } from "stores";
 import { songs } from "utils/data";
 
 type SimulatorTableProps = {};
@@ -17,6 +19,8 @@ type SimulatorTableProps = {};
 // BPM　操作　操作の値　→　緑数字、ハイスピード
 
 export const SimulatorTable: React.FC<SimulatorTableProps> = () => {
+  const state = useSelector((state) => state);
+
   return (
     <Box display="flex" flexDirection="column">
       <Typography variant="h5">操作</Typography>
@@ -46,27 +50,8 @@ export const SimulatorTable: React.FC<SimulatorTableProps> = () => {
           </TableHead>
           <TableBody>
             {/* TODO: Reduxの値で書き換える */}
-            {songs[1].sections.map((section, idx) => (
-              <TableRow key={idx}>
-                <TableCell>
-                  <Typography>{section.bpm}</Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography>TODO: select box</Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography>TODO: input</Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography>TODO: 緑数字</Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography>TODO: ハイスピード値</Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography>TODO: コメント</Typography>
-                </TableCell>
-              </TableRow>
+            {songs[state.songIdx].sections.map((section, idx) => (
+              <SimulatorTableRow key={idx} idx={idx} />
             ))}
           </TableBody>
         </Table>
