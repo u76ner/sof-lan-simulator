@@ -41,6 +41,9 @@ export const SimulatorTable: React.FC<SimulatorTableProps> = () => {
                 <Typography>緑数字</Typography>
               </TableCell>
               <TableCell align="center">
+                <Typography>白数字, LIFT</Typography>
+              </TableCell>
+              <TableCell align="center">
                 <Typography>ハイスピード</Typography>
               </TableCell>
               <TableCell align="center">
