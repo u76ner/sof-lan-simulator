@@ -6,17 +6,15 @@ import {
 } from "react-redux";
 import { songs } from "utils/data";
 
-// import { songs } from "utils/data";
-
 type InitialState = {
   white: number; // 白数字
   lift: number; // LIFT
-  currentGreen: number; // 現在の緑数字
+  currentGreenBefore: number; // 現在の緑数字（変更前）
+  currentGreenAfter: number; // 現在の緑数字（変更後）
   baseGreen: number; // ギアチェンしたときに戻る緑数字
   isFloating: boolean; // フローティングかどうか
   isClassic: boolean; // クラシックハイスピードかどうか
-  lowerThreshold: number; // 緑数字の下限
-  upperThreshold: number; // 緑数字の上限
+  greenRange: number; // 緑数字範囲（色が変わる）
 };
 
 // 操作
@@ -27,13 +25,13 @@ export const operationArray = [
   "changeHighSpeed", // ハイスピ変更
   "hideSuddenPlus", // サドプラ消す
   "showSuddenPlus", // サドプラ出す
-  "hideAndShowSuddenPlus", // サドプラ出し入れ;
+  "hideAndShowSuddenPlus", // サドプラ出し入れ
 ] as const;
 
 type OperateState = {
   operation: typeof operationArray[number];
   comment?: string;
-} & Omit<InitialState, "isClassic" | "lowerThreshold" | "upperThreshold">;
+} & Omit<InitialState, "isClassic" | "greenRange">;
 
 type SimulatorState = {
   initial: InitialState;
@@ -47,12 +45,12 @@ const simulatorSlice = createSlice({
     initial: {
       white: 0,
       lift: 0,
-      currentGreen: 300,
+      currentGreenBefore: 300,
+      currentGreenAfter: 300,
       baseGreen: 300,
       isFloating: true,
       isClassic: true,
-      lowerThreshold: 250,
-      upperThreshold: 350,
+      greenRange: 20,
     },
     operations: [],
     songIdx: 0,
@@ -64,13 +62,10 @@ const simulatorSlice = createSlice({
     },
     setSong(state, action: PayloadAction<SimulatorState["songIdx"]>) {
       state.songIdx = action.payload;
+      const { isClassic, greenRange, ...newInitial } = state.initial;
       state.operations = songs[action.payload].sections.map((_) => ({
+        ...newInitial,
         operation: operationArray[0],
-        white: state.initial.white,
-        lift: state.initial.lift,
-        currentGreen: state.initial.currentGreen,
-        baseGreen: state.initial.baseGreen,
-        isFloating: state.initial.isFloating,
       }));
     },
     setOperation(
