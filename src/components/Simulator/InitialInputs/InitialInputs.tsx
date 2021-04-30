@@ -18,7 +18,7 @@ import { songs } from "utils/data";
 
 type InitialInputsProps = {};
 
-const LABEL_WIDTH = 250;
+const LABEL_WIDTH = 220;
 
 // 曲選べる、白数字、LIFT、FHSかどうか、クラシックハイスピかどうか、開始時の緑数字、緑数字の上限、下限
 

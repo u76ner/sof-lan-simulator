@@ -9,9 +9,7 @@ import { songs } from "utils/data";
 type InitialState = {
   white: number; // 白数字
   lift: number; // LIFT
-  currentGreenBefore: number; // 現在の緑数字（変更前）
-  currentGreenAfter: number; // 現在の緑数字（変更後）
-  baseGreen: number; // ギアチェンしたときに戻る緑数字
+  green: number; // 緑数字
   isFloating: boolean; // フローティングかどうか
   isClassic: boolean; // クラシックハイスピードかどうか
   greenRange: number; // 緑数字範囲（色が変わる）
@@ -28,16 +26,26 @@ export const operationArray = [
   "hideAndShowSuddenPlus", // サドプラ出し入れ
 ] as const;
 
-type OperateState = {
-  operation: typeof operationArray[number];
-  comment?: string;
+type PlayState = {
+  highSpeed: number; // ハイスピ
 } & Omit<InitialState, "isClassic" | "greenRange">;
+
+type OperationState = {
+  operation: typeof operationArray[number];
+  value?: number; // 操作の値
+  before: PlayState; // 操作前
+  after?: PlayState; // 操作後
+  comment?: string;
+};
 
 type SimulatorState = {
   initial: InitialState;
-  operations: OperateState[]; // 状態
+  operations: OperationState[]; // 状態
   songIdx: number;
 };
+
+// TODO: ハイスピ計算できるようにする
+// const calcAfter = (operation: OperationState): PlayState => operation.before;
 
 const simulatorSlice = createSlice({
   name: "simulator",
@@ -45,9 +53,7 @@ const simulatorSlice = createSlice({
     initial: {
       white: 0,
       lift: 0,
-      currentGreenBefore: 300,
-      currentGreenAfter: 300,
-      baseGreen: 300,
+      green: 300,
       isFloating: true,
       isClassic: true,
       greenRange: 20,
@@ -64,8 +70,11 @@ const simulatorSlice = createSlice({
       state.songIdx = action.payload;
       const { isClassic, greenRange, ...newInitial } = state.initial;
       state.operations = songs[action.payload].sections.map((_) => ({
-        ...newInitial,
         operation: operationArray[0],
+        before: {
+          ...newInitial,
+          highSpeed: 0,
+        },
       }));
     },
     setOperation(
