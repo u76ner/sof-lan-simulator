@@ -135,7 +135,7 @@ export const InitialInputs: React.FC<InitialInputsProps> = () => {
         {/* 緑数字の上限、下限 */}
         <Box display="flex" alignItems="center">
           <Typography>緑数字の</Typography>
-          <Typography className={classes.typoBlue}>上限</Typography>
+          <Typography className={classes.typoRed}>下限</Typography>
           <OutlinedInput
             defaultValue={0}
             inputProps={{
@@ -145,7 +145,7 @@ export const InitialInputs: React.FC<InitialInputsProps> = () => {
             }}
           />
           <Typography>、</Typography>
-          <Typography className={classes.typoRed}>下限</Typography>
+          <Typography className={classes.typoBlue}>上限</Typography>
           <OutlinedInput
             defaultValue={0}
             inputProps={{
@@ -161,12 +161,12 @@ export const InitialInputs: React.FC<InitialInputsProps> = () => {
 };
 
 const useStyles = makeStyles((theme) => ({
-  typoBlue: {
-    color: "blue",
-    marginRight: theme.spacing(2),
-  },
   typoRed: {
     color: "red",
+    marginRight: theme.spacing(2),
+  },
+  typoBlue: {
+    color: "blue",
     marginRight: theme.spacing(2),
   },
 }));

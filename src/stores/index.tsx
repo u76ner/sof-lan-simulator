@@ -12,7 +12,10 @@ type InitialState = {
   green: number; // 緑数字
   isFloating: boolean; // フローティングかどうか
   isClassic: boolean; // クラシックハイスピードかどうか
-  greenRange: number; // 緑数字範囲（色が変わる）
+  greenRange: {
+    lower: number;
+    upper: number;
+  }; // 緑数字範囲（色が変わる）
 };
 
 // 操作
@@ -51,12 +54,15 @@ const simulatorSlice = createSlice({
   name: "simulator",
   initialState: {
     initial: {
-      white: 0,
-      lift: 0,
+      white: 100,
+      lift: 100,
       green: 300,
       isFloating: true,
       isClassic: true,
-      greenRange: 20,
+      greenRange: {
+        lower: 250,
+        upper: 350,
+      },
     },
     operations: [],
     songIdx: 0,
