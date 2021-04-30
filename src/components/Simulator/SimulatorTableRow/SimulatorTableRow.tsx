@@ -52,20 +52,17 @@ export const SimulatorTableRow: React.FC<SimulatorTableRowProps> = (props) => {
         </FormControl>
       </TableCell>
       <TableCell>
-        {currentOperation === "none" ||
-        currentOperation === "hideSuddenPlus" ||
-        currentOperation === "showSuddenPlus" ||
-        currentOperation === "hideAndShowSuddenPlus" ? (
-          <OutlinedInput disabled defaultValue="-" />
-        ) : currentOperation === "scratchWithStart" ? (
+        {currentOperation === "scratchWithStart" ? (
           <OutlinedInput type="number" defaultValue={0} />
         ) : (
-          <FormControl variant="outlined">
-            <Select defaultValue="up">
-              <MenuItem value="up">あげたり</MenuItem>
-              <MenuItem value="down">さげたり</MenuItem>
-            </Select>
-          </FormControl>
+          currentOperation === "changeHighSpeed" && (
+            <FormControl variant="outlined">
+              <Select defaultValue="up">
+                <MenuItem value="up">あげたり</MenuItem>
+                <MenuItem value="down">さげたり</MenuItem>
+              </Select>
+            </FormControl>
+          )
         )}
       </TableCell>
       <TableCell>
