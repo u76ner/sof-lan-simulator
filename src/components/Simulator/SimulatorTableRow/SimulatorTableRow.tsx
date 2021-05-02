@@ -138,7 +138,10 @@ export const SimulatorTableRow: React.FC<SimulatorTableRowProps> = (props) => {
             </FormControl>
           ) : initial.isClassic ? (
             <SelectWithClassic
-              value={operations[idx].before.highSpeed}
+              value={
+                operations[idx].after?.highSpeed ??
+                operations[idx].before.highSpeed
+              }
               onChange={(event) => {
                 dispatch(
                   actions.setOperationsWithAfter({
@@ -153,7 +156,10 @@ export const SimulatorTableRow: React.FC<SimulatorTableRowProps> = (props) => {
           ) : (
             <SelectWithoutClassic
               // TODO: 初期値ちゃんとする
-              value={operations[idx].before.highSpeed}
+              value={
+                operations[idx].after?.highSpeed ??
+                operations[idx].before.highSpeed
+              }
               onChange={(event) => {
                 dispatch(
                   actions.setOperationsWithAfter({
