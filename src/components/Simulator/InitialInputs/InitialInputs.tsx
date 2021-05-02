@@ -16,6 +16,10 @@ import {
 
 import { actions, useSelector, useDispatch } from "stores";
 import { songs } from "utils/data";
+import {
+  SelectWithClassic,
+  SelectWithoutClassic,
+} from "components/commons/atoms";
 
 type InitialInputsProps = {};
 
@@ -40,7 +44,7 @@ export const InitialInputs: React.FC<InitialInputsProps> = () => {
           </Box>
           <FormControl variant="outlined">
             <Select
-              defaultValue={songIdx}
+              value={songIdx}
               onChange={(event) => {
                 dispatch(
                   actions.setSong(parseInt(event.target.value as string))
@@ -63,10 +67,15 @@ export const InitialInputs: React.FC<InitialInputsProps> = () => {
           </Box>
           <RadioGroup
             name="isFloating"
-            defaultValue={initial.isFloating ? "true" : "false"}
+            value={initial.isFloating ? "true" : "false"}
             onChange={(event) => {
               dispatch(
-                actions.setInitialIsFloating(event.target.value === "true")
+                actions.setInitial({
+                  initial: {
+                    isFloating: event.target.value === "true",
+                  },
+                  reset: true,
+                })
               );
             }}
           >
@@ -89,10 +98,15 @@ export const InitialInputs: React.FC<InitialInputsProps> = () => {
           </Box>
           <RadioGroup
             name="isClassic"
-            defaultValue={initial.isClassic ? "true" : "false"}
+            value={initial.isClassic ? "true" : "false"}
             onChange={(event) => {
               dispatch(
-                actions.setInitialIsClassic(event.target.value === "true")
+                actions.setInitial({
+                  initial: {
+                    isClassic: event.target.value === "true",
+                  },
+                  reset: true,
+                })
               );
             }}
           >
@@ -103,10 +117,12 @@ export const InitialInputs: React.FC<InitialInputsProps> = () => {
               label="使用する"
             />
             <FormControlLabel
-              disabled={initial.isFloating}
+              // disabled={initial.isFloating}
+              disabled
               value="false"
               control={<Radio />}
-              label="使用しない"
+              // label="使用しない"
+              label="使用しない（開発中）"
             />
           </RadioGroup>
         </Box>
@@ -117,7 +133,7 @@ export const InitialInputs: React.FC<InitialInputsProps> = () => {
             <Typography align="right">白数字</Typography>
           </Box>
           <OutlinedInput
-            defaultValue={initial.white}
+            value={initial.white}
             inputProps={{
               type: "number",
               min: 0,
@@ -125,7 +141,11 @@ export const InitialInputs: React.FC<InitialInputsProps> = () => {
             }}
             onChange={(event) => {
               dispatch(
-                actions.setInitialWhite(parseInt(event.target.value as string))
+                actions.setInitial({
+                  initial: {
+                    white: parseInt(event.target.value as string),
+                  },
+                })
               );
             }}
           />
@@ -137,7 +157,7 @@ export const InitialInputs: React.FC<InitialInputsProps> = () => {
             <Typography align="right">LIFT</Typography>
           </Box>
           <OutlinedInput
-            defaultValue={initial.lift}
+            value={initial.lift}
             inputProps={{
               type: "number",
               min: 0,
@@ -145,36 +165,73 @@ export const InitialInputs: React.FC<InitialInputsProps> = () => {
             }}
             onChange={(event) => {
               dispatch(
-                actions.setInitialLift(parseInt(event.target.value as string))
+                actions.setInitial({
+                  initial: {
+                    lift: parseInt(event.target.value as string),
+                  },
+                })
               );
             }}
           />
         </Box>
-        {/* 緑数字 */}
         <Box display="flex" alignItems="center">
           <Box width={LABEL_WIDTH} pr={2}>
-            <Typography align="right">開始時の緑数字</Typography>
+            <Typography align="right">
+              {initial.isFloating ? "開始時の緑数字" : "ハイスピード"}
+            </Typography>
           </Box>
-          <OutlinedInput
-            defaultValue={initial.green}
-            inputProps={{
-              type: "number",
-              min: 0,
-              max: 2000,
-            }}
-            onChange={(event) => {
-              dispatch(
-                actions.setInitialGreen(parseInt(event.target.value as string))
-              );
-            }}
-          />
+          {initial.isFloating ? (
+            <OutlinedInput
+              value={initial.green}
+              inputProps={{
+                type: "number",
+                min: 0,
+                max: 2000,
+              }}
+              onChange={(event) => {
+                dispatch(
+                  actions.setInitial({
+                    initial: {
+                      green: parseInt(event.target.value as string),
+                    },
+                  })
+                );
+              }}
+            />
+          ) : initial.isClassic ? (
+            <SelectWithClassic
+              value={initial.highSpeed}
+              onChange={(event) => {
+                dispatch(
+                  actions.setInitial({
+                    initial: {
+                      highSpeed: parseFloat(event.target.value as string),
+                    },
+                  })
+                );
+              }}
+            />
+          ) : (
+            <SelectWithoutClassic
+              value={initial.highSpeed}
+              onChange={(event) => {
+                dispatch(
+                  actions.setInitial({
+                    initial: {
+                      highSpeed: parseFloat(event.target.value as string),
+                    },
+                  })
+                );
+              }}
+            />
+          )}
         </Box>
         {/* 緑数字の上限、下限 */}
         <Box display="flex" alignItems="center">
           <Typography>緑数字の</Typography>
           <Typography className={classes.typoRed}>下限</Typography>
           <OutlinedInput
-            defaultValue={initial.greenRange.lower}
+            value={initial.greenRange.lower}
             inputProps={{
               type: "number",
               min: 0,
@@ -182,16 +239,20 @@ export const InitialInputs: React.FC<InitialInputsProps> = () => {
             }}
             onChange={(event) => {
               dispatch(
-                actions.setInitialGreenRangeLower(
-                  parseInt(event.target.value as string)
-                )
+                actions.setInitial({
+                  initial: {
+                    greenRange: {
+                      lower: parseInt(event.target.value as string),
+                    },
+                  },
+                })
               );
             }}
           />
           <Typography>、</Typography>
           <Typography className={classes.typoBlue}>上限</Typography>
           <OutlinedInput
-            defaultValue={initial.greenRange.upper}
+            value={initial.greenRange.upper}
             inputProps={{
               type: "number",
               min: 0,
@@ -199,9 +260,13 @@ export const InitialInputs: React.FC<InitialInputsProps> = () => {
             }}
             onChange={(event) => {
               dispatch(
-                actions.setInitialGreenRangeUpper(
-                  parseInt(event.target.value as string)
-                )
+                actions.setInitial({
+                  initial: {
+                    greenRange: {
+                      upper: parseInt(event.target.value as string),
+                    },
+                  },
+                })
               );
             }}
           />

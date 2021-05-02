@@ -4,18 +4,21 @@ import {
   useDispatch as useReduxDispatch,
   TypedUseSelectorHook,
 } from "react-redux";
+import { DeepPartial } from "utility-types";
+import merge from "deepmerge";
+
 import { songs } from "utils/data";
 
 type InitialState = {
-  white: number; // 白数字
-  lift: number; // LIFT
   isFloating: boolean; // フローティングかどうか
   isClassic: boolean; // クラシックハイスピードかどうか
+  white: number; // 白数字
+  lift: number; // LIFT
   green: number; // 緑数字
-  highSpeed: number; // クラシックハイスピード
+  highSpeed: number; // ハイスピード
   greenRange: {
-    lower: number;
-    upper: number;
+    lower?: number;
+    upper?: number;
   }; // 緑数字範囲（色が変わる）
 };
 
@@ -32,9 +35,8 @@ export const operationArray = [
 
 type OperationState = {
   operation: typeof operationArray[number];
-  value: number; // 操作の値
-  before: Omit<InitialState, "isFloating" | "isClassic" | "greenRange">; // 操作前
-  after?: Omit<InitialState, "isFloating" | "isClassic" | "greenRange">; // 操作後
+  before: Omit<InitialState, "isClassic" | "greenRange">; // 操作前
+  after?: Omit<InitialState, "isClassic" | "greenRange">; // 操作後
   comment?: string;
 };
 
@@ -44,21 +46,29 @@ type SimulatorState = {
   songIdx: number;
 };
 
-// TODO: ハイスピ計算できるようにする
-// const calcAfter = (operation: OperationState): PlayState => operation.before;
-
 // ハイスピ*BPM = 600でサドプラ無しだと緑数字292
+
+const resetOperations = (state: SimulatorState): OperationState[] => {
+  const { isClassic, greenRange, ...newInitial } = state.initial;
+  return (state.operations = songs[state.songIdx].sections.map((_) => ({
+    operation: operationArray[0],
+    before: {
+      ...newInitial,
+      highSpeed: 1.5,
+    },
+  })));
+};
 
 const simulatorSlice = createSlice({
   name: "simulator",
   initialState: {
     initial: {
+      isFloating: true,
+      isClassic: true,
       white: 100,
       lift: 100,
       green: 300,
       highSpeed: 1,
-      isFloating: true,
-      isClassic: true,
       greenRange: {
         lower: 250,
         upper: 350,
@@ -74,93 +84,43 @@ const simulatorSlice = createSlice({
     },
     setSong(state, action: PayloadAction<SimulatorState["songIdx"]>) {
       state.songIdx = action.payload;
-      const { isClassic, greenRange, ...newInitial } = state.initial;
-      state.operations = songs[action.payload].sections.map((_) => ({
-        operation: operationArray[0],
-        value: 0,
-        before: {
-          ...newInitial,
-          highSpeed: 1.5,
-        },
-      }));
+      resetOperations(state);
     },
-    setInitialWhite(
+    setInitial(
       state,
-      action: PayloadAction<SimulatorState["initial"]["white"]>
+      action: PayloadAction<{
+        initial: DeepPartial<SimulatorState["initial"]>;
+        reset?: boolean;
+      }>
     ) {
-      state.initial.white = action.payload;
+      state.initial = merge(state.initial, action.payload.initial);
+      // TODO: ハイスピor緑数字を再計算する処理
+      if (action.payload.reset) resetOperations(state);
     },
-    setInitialLift(
+    setOperations(
       state,
-      action: PayloadAction<SimulatorState["initial"]["lift"]>
+      action: PayloadAction<{
+        idx: number;
+        operation: SimulatorState["operations"][0];
+      }>
     ) {
-      state.initial.lift = action.payload;
+      // TODO: DeepMergeが通るようにする
+      // state.operations[action.payload.idx] = merge(
+      //   state.operations[action.payload.idx],
+      //   action.payload.operation
+      // );
+      state.operations[action.payload.idx] = action.payload.operation;
     },
-    setInitialGreen(
-      state,
-      action: PayloadAction<SimulatorState["initial"]["green"]>
-    ) {
-      state.initial.green = action.payload;
-    },
-    setInitialIsFloating(
-      state,
-      action: PayloadAction<SimulatorState["initial"]["isFloating"]>
-    ) {
-      state.initial.isFloating = action.payload;
-    },
-    setInitialIsClassic(
-      state,
-      action: PayloadAction<SimulatorState["initial"]["isClassic"]>
-    ) {
-      state.initial.isClassic = action.payload;
-    },
-    setInitialGreenRangeLower(
-      state,
-      action: PayloadAction<SimulatorState["initial"]["greenRange"]["lower"]>
-    ) {
-      state.initial.greenRange.lower = action.payload;
-    },
-    setInitialGreenRangeUpper(
-      state,
-      action: PayloadAction<SimulatorState["initial"]["greenRange"]["upper"]>
-    ) {
-      state.initial.greenRange.upper = action.payload;
-    },
-    setOperationsOperation(
+    setOperationsWithAfter(
       state,
       action: PayloadAction<{
         idx: number;
         operation: SimulatorState["operations"][0]["operation"];
+        after: SimulatorState["operations"][0]["after"];
       }>
     ) {
       state.operations[action.payload.idx].operation = action.payload.operation;
-    },
-    setOperationsValue(
-      state,
-      action: PayloadAction<{
-        idx: number;
-        value: SimulatorState["operations"][0]["value"];
-      }>
-    ) {
-      state.operations[action.payload.idx].value = action.payload.value;
-    },
-    setOperationsBefore(
-      state,
-      action: PayloadAction<{
-        idx: number;
-        before: SimulatorState["operations"][0]["before"];
-      }>
-    ) {
-      state.operations[action.payload.idx].before = action.payload.before;
-    },
-    setOperationsComment(
-      state,
-      action: PayloadAction<{
-        idx: number;
-        comment: SimulatorState["operations"][0]["comment"];
-      }>
-    ) {
-      state.operations[action.payload.idx].comment = action.payload.comment;
+      state.operations[action.payload.idx].after = action.payload.after;
     },
   },
 });

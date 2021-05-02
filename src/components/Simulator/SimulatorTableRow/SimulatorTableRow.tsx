@@ -11,6 +11,11 @@ import {
 
 import { operationArray, actions, useSelector, useDispatch } from "stores";
 import { songs } from "utils/data";
+import { offsetsWithFloating } from "utils/consts";
+import {
+  SelectWithClassic,
+  SelectWithoutClassic,
+} from "components/commons/atoms";
 
 type SimulatorTableRowProps = {
   idx: number;
@@ -31,13 +36,31 @@ export const SimulatorTableRow: React.FC<SimulatorTableRowProps> = (props) => {
       <TableCell align="center">
         <FormControl variant="outlined">
           <Select
-            defaultValue={operationArray[0]}
+            value={operations[idx].operation}
             onChange={(event) => {
+              const operation = event.target
+                .value as typeof operationArray[number];
+              const after =
+                operation === operationArray[0] // 何もしない
+                  ? undefined
+                  : {
+                      ...operations[idx].before,
+                      ...(operation === operationArray[1] // 皿チョン
+                        ? {}
+                        : operation === operationArray[2] // ハイスピ変更
+                        ? {}
+                        : operation === operationArray[3] // SUD+消す
+                        ? { white: 0 }
+                        : operation === operationArray[4] // TODO: SUD+出す
+                        ? {} // TODO: フローティングなら緑数字戻す
+                        : // SUD+出し入れ
+                          { white: initial.white }), // TODO: フローティングなら緑数字戻す
+                    };
               dispatch(
-                actions.setOperationsOperation({
+                actions.setOperationsWithAfter({
                   idx,
-                  operation: event.target
-                    .value as typeof operationArray[number],
+                  operation,
+                  after,
                 })
               );
             }}
@@ -61,90 +84,100 @@ export const SimulatorTableRow: React.FC<SimulatorTableRowProps> = (props) => {
         {currentOperation === "scratchWithStart" ? (
           <OutlinedInput
             type="number"
-            defaultValue={operations[idx].value}
+            defaultValue={0}
             onChange={(event) => {
               dispatch(
-                actions.setOperationsValue({
+                actions.setOperations({
                   idx,
-                  value: parseInt(event.target.value),
+                  operation: {
+                    ...operations[idx],
+                    after: {
+                      ...operations[idx].before,
+                      white:
+                        operations[idx].before.white +
+                        parseInt(event.target.value as string),
+                    },
+                  },
                 })
               );
             }}
           />
         ) : (
-          currentOperation === "changeHighSpeed" && (
+          currentOperation === "changeHighSpeed" &&
+          (initial.isFloating ? (
             <FormControl variant="outlined">
-              {initial.isFloating ? (
-                <Select
-                  defaultValue={operations[idx].value}
-                  onChange={(event) => {
-                    dispatch(
-                      actions.setOperationsValue({
-                        idx,
-                        value: parseFloat(event.target.value as string),
-                      })
-                    );
-                  }}
-                >
-                  {
-                    // TODO: ハイスピが0を下回らない処理
-                    offsetsWithFloating.map((offset) => (
-                      <MenuItem key={offset} value={offset / 2}>
-                        {offset === 0
-                          ? "-"
-                          : offset > 0
-                          ? `+${(offset / 2).toFixed(1)}（黒鍵${offset}個）`
-                          : `-${(-offset / 2).toFixed(1)}（白鍵${-offset}個）`}
-                      </MenuItem>
-                    ))
-                  }
-                </Select>
-              ) : initial.isClassic ? (
-                <Select
-                  defaultValue={operations[idx].before.highSpeed}
-                  onChange={(event) => {
-                    dispatch(
-                      actions.setOperationsBefore({
-                        idx,
-                        before: {
+              <Select
+                defaultValue={0}
+                onChange={(event) => {
+                  dispatch(
+                    actions.setOperations({
+                      idx,
+                      operation: {
+                        ...operations[idx],
+                        after: {
                           ...operations[idx].before,
-                          highSpeed: parseFloat(event.target.value as string),
+                          highSpeed:
+                            operations[idx].before.highSpeed +
+                            parseInt(event.target.value as string),
                         },
-                      })
-                    );
-                  }}
-                >
-                  {offsetsWithClassic.map((offset) => (
-                    <MenuItem key={offset} value={offset}>
-                      {offset.toFixed(2)}
+                      },
+                    })
+                  );
+                }}
+              >
+                {
+                  // TODO: ハイスピが0を下回らない処理
+                  offsetsWithFloating.map((offset) => (
+                    <MenuItem key={offset} value={offset / 2}>
+                      {offset === 0
+                        ? "-"
+                        : offset > 0
+                        ? `+${(offset / 2).toFixed(1)}（黒鍵${offset}個）`
+                        : `-${(-offset / 2).toFixed(1)}（白鍵${-offset}個）`}
                     </MenuItem>
-                  ))}
-                </Select>
-              ) : (
-                <Select
-                  defaultValue={operations[idx].before.highSpeed}
-                  onChange={(event) => {
-                    dispatch(
-                      actions.setOperationsBefore({
-                        idx,
-                        before: {
-                          ...operations[idx].before,
-                          highSpeed: parseFloat(event.target.value as string),
-                        },
-                      })
-                    );
-                  }}
-                >
-                  {offsetsWithoutClassic.map((offset) => (
-                    // TODO: valueを適切に計算する
-                    <MenuItem key={offset} value={offset}>
-                      {offset}
-                    </MenuItem>
-                  ))}
-                </Select>
-              )}
+                  ))
+                }
+              </Select>
             </FormControl>
-          )
+          ) : initial.isClassic ? (
+            <SelectWithClassic
+              value={operations[idx].before.highSpeed}
+              onChange={(event) => {
+                dispatch(
+                  actions.setOperations({
+                    idx,
+                    operation: {
+                      ...operations[idx],
+                      after: {
+                        ...operations[idx].before,
+                        highSpeed: parseFloat(event.target.value as string),
+                      },
+                    },
+                  })
+                );
+              }}
+            />
+          ) : (
+            <SelectWithoutClassic
+              // TODO: 初期値ちゃんとする
+              value={operations[idx].before.highSpeed}
+              onChange={(event) => {
+                dispatch(
+                  actions.setOperations({
+                    idx,
+                    operation: {
+                      ...operations[idx],
+                      after: {
+                        ...operations[idx].before,
+                        // TODO: クラシックじゃないときのハイスピを適切に計算する
+                        // highSpeed: parseInt(event.target.value as string),
+                      },
+                    },
+                  })
+                );
+              }}
+            />
+          ))
         )}
       </TableCell>
       <TableCell align="center">
@@ -165,9 +198,12 @@ export const SimulatorTableRow: React.FC<SimulatorTableRowProps> = (props) => {
           defaultValue={operations[idx].comment ?? ""}
           onChange={(event) => {
             dispatch(
-              actions.setOperationsComment({
+              actions.setOperations({
                 idx,
-                comment: event.target.value,
+                operation: {
+                  ...operations[idx],
+                  comment: event.target.value as string,
+                },
               })
             );
           }}
@@ -176,60 +212,3 @@ export const SimulatorTableRow: React.FC<SimulatorTableRowProps> = (props) => {
     </TableRow>
   );
 };
-
-const offsetsWithFloating = [
-  8,
-  7,
-  6,
-  5,
-  4,
-  3,
-  2,
-  1,
-  0,
-  -1,
-  -2,
-  -3,
-  -4,
-  -5,
-  -6,
-  -7,
-  -8,
-];
-
-const offsetsWithClassic = [
-  4.0,
-  3.75,
-  3.5,
-  3.25,
-  3.0,
-  2.75,
-  2.5,
-  2.25,
-  2.0,
-  1.5,
-  1,
-];
-
-const offsetsWithoutClassic = [
-  20,
-  19,
-  18,
-  17,
-  16,
-  15,
-  14,
-  13,
-  12,
-  11,
-  10,
-  9,
-  8,
-  7,
-  6,
-  5,
-  4,
-  3,
-  2,
-  1,
-];
