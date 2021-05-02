@@ -52,10 +52,7 @@ const resetOperations = (state: SimulatorState): OperationState[] => {
   const { isClassic, greenRange, ...newInitial } = state.initial;
   return (state.operations = songs[state.songIdx].sections.map((_) => ({
     operation: operationArray[0],
-    before: {
-      ...newInitial,
-      highSpeed: 1.5,
-    },
+    before: newInitial,
   })));
 };
 
