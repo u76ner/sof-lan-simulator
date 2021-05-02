@@ -40,22 +40,27 @@ export const SimulatorTableRow: React.FC<SimulatorTableRowProps> = (props) => {
             onChange={(event) => {
               const operation = event.target
                 .value as typeof operationArray[number];
+              if (operation === operationArray[0]) {
+                // 何もしない
+                dispatch(
+                  actions.setOperationsWithAfter({
+                    idx,
+                    operation,
+                  })
+                );
+                return;
+              }
               const after =
-                operation === operationArray[0] // 何もしない
-                  ? undefined
-                  : {
-                      ...operations[idx].before,
-                      ...(operation === operationArray[1] // 皿チョン
-                        ? {}
-                        : operation === operationArray[2] // ハイスピ変更
-                        ? {}
-                        : operation === operationArray[3] // SUD+消す
-                        ? { white: 0 }
-                        : operation === operationArray[4] // TODO: SUD+出す
-                        ? {} // TODO: フローティングなら緑数字戻す
-                        : // SUD+出し入れ
-                          { white: initial.white }), // TODO: フローティングなら緑数字戻す
-                    };
+                operation === operationArray[1] // 皿チョン
+                  ? {}
+                  : operation === operationArray[2] // ハイスピ変更
+                  ? {}
+                  : operation === operationArray[3] // SUD+消す
+                  ? { white: 0 }
+                  : operation === operationArray[4] // TODO: SUD+出す
+                  ? {} // TODO: フローティングなら緑数字戻す
+                  : // SUD+出し入れ
+                    { white: initial.white }; // TODO: フローティングなら緑数字戻す
               dispatch(
                 actions.setOperationsWithAfter({
                   idx,
@@ -87,16 +92,12 @@ export const SimulatorTableRow: React.FC<SimulatorTableRowProps> = (props) => {
             defaultValue={0}
             onChange={(event) => {
               dispatch(
-                actions.setOperations({
+                actions.setOperationsWithAfter({
                   idx,
-                  operation: {
-                    ...operations[idx],
-                    after: {
-                      ...operations[idx].before,
-                      white:
-                        operations[idx].before.white +
-                        parseInt(event.target.value as string),
-                    },
+                  after: {
+                    white:
+                      operations[idx].before.white +
+                      parseInt(event.target.value as string),
                   },
                 })
               );
@@ -110,16 +111,12 @@ export const SimulatorTableRow: React.FC<SimulatorTableRowProps> = (props) => {
                 defaultValue={0}
                 onChange={(event) => {
                   dispatch(
-                    actions.setOperations({
+                    actions.setOperationsWithAfter({
                       idx,
-                      operation: {
-                        ...operations[idx],
-                        after: {
-                          ...operations[idx].before,
-                          highSpeed:
-                            operations[idx].before.highSpeed +
-                            parseInt(event.target.value as string),
-                        },
+                      after: {
+                        highSpeed:
+                          operations[idx].before.highSpeed +
+                          parseFloat(event.target.value as string),
                       },
                     })
                   );
@@ -144,14 +141,10 @@ export const SimulatorTableRow: React.FC<SimulatorTableRowProps> = (props) => {
               value={operations[idx].before.highSpeed}
               onChange={(event) => {
                 dispatch(
-                  actions.setOperations({
+                  actions.setOperationsWithAfter({
                     idx,
-                    operation: {
-                      ...operations[idx],
-                      after: {
-                        ...operations[idx].before,
-                        highSpeed: parseFloat(event.target.value as string),
-                      },
+                    after: {
+                      highSpeed: parseFloat(event.target.value as string),
                     },
                   })
                 );
@@ -163,15 +156,11 @@ export const SimulatorTableRow: React.FC<SimulatorTableRowProps> = (props) => {
               value={operations[idx].before.highSpeed}
               onChange={(event) => {
                 dispatch(
-                  actions.setOperations({
+                  actions.setOperationsWithAfter({
                     idx,
-                    operation: {
-                      ...operations[idx],
-                      after: {
-                        ...operations[idx].before,
-                        // TODO: クラシックじゃないときのハイスピを適切に計算する
-                        // highSpeed: parseInt(event.target.value as string),
-                      },
+                    after: {
+                      // TODO: クラシックじゃないときのハイスピを適切に計算する
+                      // highSpeed: parseInt(event.target.value as string),
                     },
                   })
                 );
@@ -198,12 +187,9 @@ export const SimulatorTableRow: React.FC<SimulatorTableRowProps> = (props) => {
           defaultValue={operations[idx].comment ?? ""}
           onChange={(event) => {
             dispatch(
-              actions.setOperations({
+              actions.setOperationsComment({
                 idx,
-                operation: {
-                  ...operations[idx],
-                  comment: event.target.value as string,
-                },
+                comment: event.target.value as string,
               })
             );
           }}

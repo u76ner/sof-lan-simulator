@@ -97,30 +97,49 @@ const simulatorSlice = createSlice({
       // TODO: ハイスピor緑数字を再計算する処理
       if (action.payload.reset) resetOperations(state);
     },
-    setOperations(
-      state,
-      action: PayloadAction<{
-        idx: number;
-        operation: SimulatorState["operations"][0];
-      }>
-    ) {
-      // TODO: DeepMergeが通るようにする
-      // state.operations[action.payload.idx] = merge(
-      //   state.operations[action.payload.idx],
-      //   action.payload.operation
-      // );
-      state.operations[action.payload.idx] = action.payload.operation;
-    },
+    // setOperations(
+    //   state,
+    //   action: PayloadAction<{
+    //     idx: number;
+    //     operation: SimulatorState["operations"][0];
+    //   }>
+    // ) {
+    //   // TODO: DeepMergeが通るようにする
+    //   // state.operations[action.payload.idx] = merge(
+    //   //   state.operations[action.payload.idx],
+    //   //   action.payload.operation
+    //   // );
+    //   state.operations[action.payload.idx] = action.payload.operation;
+    // },
     setOperationsWithAfter(
       state,
       action: PayloadAction<{
         idx: number;
-        operation: SimulatorState["operations"][0]["operation"];
-        after: SimulatorState["operations"][0]["after"];
+        operation?: SimulatorState["operations"][0]["operation"];
+        after?: Partial<SimulatorState["operations"][0]["after"]>;
       }>
     ) {
-      state.operations[action.payload.idx].operation = action.payload.operation;
-      state.operations[action.payload.idx].after = action.payload.after;
+      if (action.payload.operation) {
+        state.operations[action.payload.idx].operation =
+          action.payload.operation;
+      }
+      const after = action.payload.after;
+      state.operations[action.payload.idx].after =
+        after != null
+          ? {
+              ...state.operations[action.payload.idx].before,
+              ...after,
+            }
+          : undefined;
+    },
+    setOperationsComment(
+      state,
+      action: PayloadAction<{
+        idx: number;
+        comment: SimulatorState["operations"][0]["comment"];
+      }>
+    ) {
+      state.operations[action.payload.idx].comment = action.payload.comment;
     },
   },
 });
