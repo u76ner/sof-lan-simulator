@@ -50,10 +50,10 @@ type SimulatorState = {
 
 const resetOperations = (state: SimulatorState): OperationState[] => {
   const { isClassic, greenRange, ...newInitial } = state.initial;
-  return (state.operations = songs[state.songIdx].sections.map((_) => ({
+  return songs[state.songIdx].sections.map((_) => ({
     operation: operationArray[0],
     before: newInitial,
-  })));
+  }));
 };
 
 const simulatorSlice = createSlice({
@@ -81,7 +81,7 @@ const simulatorSlice = createSlice({
     },
     setSong(state, action: PayloadAction<SimulatorState["songIdx"]>) {
       state.songIdx = action.payload;
-      resetOperations(state);
+      state.operations = resetOperations(state);
     },
     setInitial(
       state,
@@ -92,7 +92,7 @@ const simulatorSlice = createSlice({
     ) {
       state.initial = merge(state.initial, action.payload.initial);
       // TODO: ハイスピor緑数字を再計算する処理
-      if (action.payload.reset) resetOperations(state);
+      if (action.payload.reset) state.operations = resetOperations(state);
     },
     // setOperations(
     //   state,
