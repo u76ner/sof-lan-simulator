@@ -1,7 +1,7 @@
 import React from "react";
 import { FormControl, Select, MenuItem } from "@material-ui/core";
 
-import { offsetsWithoutClassic } from "utils/consts";
+import { withoutClassic } from "utils/consts";
 
 type SelectWithoutClassicProps = {
   value?: number;
@@ -20,13 +20,8 @@ export const SelectWithoutClassic: React.FC<SelectWithoutClassicProps> = (
 
   return (
     <FormControl variant="outlined">
-      <Select
-        // TODO: 初期値ちゃんとする
-        value={value}
-        onChange={onChange}
-      >
-        {offsetsWithoutClassic.map((offset) => (
-          // TODO: valueを適切に計算する
+      <Select value={value} onChange={onChange}>
+        {withoutClassic.map((offset) => (
           <MenuItem key={offset} value={offset}>
             {offset}
           </MenuItem>

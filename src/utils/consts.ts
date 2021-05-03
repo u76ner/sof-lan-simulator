@@ -1,4 +1,4 @@
-export const offsetsWithFloating = [
+export const withFloating = [
   8,
   7,
   6,
@@ -18,7 +18,7 @@ export const offsetsWithFloating = [
   -8,
 ];
 
-export const offsetsWithClassic = [
+export const withClassic = [
   4.0,
   3.75,
   3.5,
@@ -32,7 +32,7 @@ export const offsetsWithClassic = [
   1,
 ];
 
-export const offsetsWithoutClassic = [
+export const withoutClassic = [
   20,
   19,
   18,

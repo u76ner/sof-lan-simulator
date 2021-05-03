@@ -1,7 +1,7 @@
 import React from "react";
 import { FormControl, Select, MenuItem } from "@material-ui/core";
 
-import { offsetsWithClassic } from "utils/consts";
+import { withClassic } from "utils/consts";
 
 type SelectWithClassicProps = {
   value?: number;
@@ -19,7 +19,7 @@ export const SelectWithClassic: React.FC<SelectWithClassicProps> = (props) => {
   return (
     <FormControl variant="outlined">
       <Select value={value} onChange={onChange}>
-        {offsetsWithClassic.map((offset) => (
+        {withClassic.map((offset) => (
           <MenuItem key={offset} value={offset}>
             {offset.toFixed(2)}
           </MenuItem>

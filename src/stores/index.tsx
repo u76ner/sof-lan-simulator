@@ -31,12 +31,16 @@ export const operationArray = [
   "hideSuddenPlus", // サドプラ消す
   "showSuddenPlus", // サドプラ出す
   "hideAndShowSuddenPlus", // サドプラ出し入れ
+  "scratchWithStartAndChangeHighSpeed", // 皿チョン→ハイスピ変更
 ] as const;
 
 type OperationState = {
   operation: typeof operationArray[number];
+  base: Pick<InitialState, "white" | "green">; // 基準となる状態
   before: Omit<InitialState, "isClassic" | "greenRange">; // 操作前
   after?: Omit<InitialState, "isClassic" | "greenRange">; // 操作後
+  value?: number; // 操作の値
+  value2?: number; // 操作の値2（ad hocだけど多分3つ出てくることはないのでよしとする）
   comment?: string;
 };
 
@@ -49,10 +53,14 @@ type SimulatorState = {
 // ハイスピ*BPM = 600でサドプラ無しだと緑数字292
 
 const resetOperations = (state: SimulatorState): OperationState[] => {
-  const { isClassic, greenRange, ...newInitial } = state.initial;
+  const { isClassic, greenRange, ...before } = state.initial;
   return songs[state.songIdx].sections.map((_) => ({
     operation: operationArray[0],
-    before: newInitial,
+    base: {
+      white: before.white,
+      green: before.green,
+    },
+    before: before,
   }));
 };
 
@@ -90,64 +98,52 @@ const simulatorSlice = createSlice({
         reset?: boolean;
       }>
     ) {
+      const { initial, reset } = action.payload;
       // FIXME: deepmergeがうまくいかない（mergeの引数がDeepPartialではなくPartialのため）
       // state.initial = merge(state.initial, action.payload.initial);
       state.initial = {
         ...state.initial,
-        ...action.payload.initial,
+        ...initial,
         greenRange: {
           ...state.initial.greenRange,
-          ...action.payload.initial.greenRange,
+          ...initial.greenRange,
         },
       };
+      // TODO: 初期状態を再計算する処理
       // TODO: ハイスピor緑数字を再計算する処理
-      if (action.payload.reset) state.operations = resetOperations(state);
+      if (reset) state.operations = resetOperations(state);
     },
-    // setOperations(
-    //   state,
-    //   action: PayloadAction<{
-    //     idx: number;
-    //     operation: SimulatorState["operations"][0];
-    //   }>
-    // ) {
-    //   // TODO: DeepMergeが通るようにする
-    //   // state.operations[action.payload.idx] = merge(
-    //   //   state.operations[action.payload.idx],
-    //   //   action.payload.operation
-    //   // );
-    //   state.operations[action.payload.idx] = action.payload.operation;
-    // },
-    setOperationsWithAfter(
+    setOperations(
       state,
       action: PayloadAction<{
         idx: number;
-        operation?: SimulatorState["operations"][0]["operation"];
-        after?: Partial<SimulatorState["operations"][0]["after"]>;
+        operation: Partial<
+          Pick<SimulatorState["operations"][0], "value" | "value2" | "comment">
+        >;
       }>
     ) {
-      const { idx, operation, after } = action.payload;
+      const { idx, operation } = action.payload;
       state.operations[idx] = {
         ...state.operations[idx],
-        ...(operation ? { operation } : {}),
-        after:
-          // {}のときはundefinedにしない（{}はfalsy）
-          after != null
-            ? {
-                ...state.operations[idx].before,
-                ...after,
-              }
-            : undefined,
+        ...operation,
       };
       // TODO: 緑数字とかハイスピとか更新する
     },
-    setOperationsComment(
+    setOperationsOnInit(
       state,
       action: PayloadAction<{
         idx: number;
-        comment: SimulatorState["operations"][0]["comment"];
+        operation: SimulatorState["operations"][0]["operation"];
       }>
     ) {
-      state.operations[action.payload.idx].comment = action.payload.comment;
+      const { idx, operation } = action.payload;
+      state.operations[idx] = {
+        ...state.operations[idx],
+        operation,
+        value: undefined,
+        value2: undefined,
+      };
+      // TODO: 緑数字とかハイスピとか更新する
     },
   },
 });
