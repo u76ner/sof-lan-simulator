@@ -242,6 +242,7 @@ export const InitialInputs: React.FC<InitialInputsProps> = () => {
                 actions.setInitial({
                   initial: {
                     greenRange: {
+                      ...initial.greenRange,
                       lower: parseInt(event.target.value as string),
                     },
                   },
@@ -263,6 +264,7 @@ export const InitialInputs: React.FC<InitialInputsProps> = () => {
                 actions.setInitial({
                   initial: {
                     greenRange: {
+                      ...initial.greenRange,
                       upper: parseInt(event.target.value as string),
                     },
                   },

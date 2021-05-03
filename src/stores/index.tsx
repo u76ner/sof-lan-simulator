@@ -5,7 +5,7 @@ import {
   TypedUseSelectorHook,
 } from "react-redux";
 import { DeepPartial } from "utility-types";
-import merge from "deepmerge";
+// import merge from "deepmerge";
 
 import { songs } from "utils/data";
 
@@ -17,8 +17,8 @@ type InitialState = {
   green: number; // 緑数字
   highSpeed: number; // ハイスピード
   greenRange: {
-    lower?: number;
-    upper?: number;
+    lower: number;
+    upper: number;
   }; // 緑数字範囲（色が変わる）
 };
 
@@ -90,7 +90,16 @@ const simulatorSlice = createSlice({
         reset?: boolean;
       }>
     ) {
-      state.initial = merge(state.initial, action.payload.initial);
+      // FIXME: deepmergeがうまくいかない（mergeの引数がDeepPartialではなくPartialのため）
+      // state.initial = merge(state.initial, action.payload.initial);
+      state.initial = {
+        ...state.initial,
+        ...action.payload.initial,
+        greenRange: {
+          ...state.initial.greenRange,
+          ...action.payload.initial.greenRange,
+        },
+      };
       // TODO: ハイスピor緑数字を再計算する処理
       if (action.payload.reset) state.operations = resetOperations(state);
     },
