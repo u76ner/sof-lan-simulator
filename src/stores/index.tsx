@@ -125,18 +125,20 @@ const simulatorSlice = createSlice({
         after?: Partial<SimulatorState["operations"][0]["after"]>;
       }>
     ) {
-      if (action.payload.operation) {
-        state.operations[action.payload.idx].operation =
-          action.payload.operation;
-      }
-      const after = action.payload.after;
-      state.operations[action.payload.idx].after =
-        after != null
-          ? {
-              ...state.operations[action.payload.idx].before,
-              ...after,
-            }
-          : undefined;
+      const { idx, operation, after } = action.payload;
+      state.operations[idx] = {
+        ...state.operations[idx],
+        ...(operation ? { operation } : {}),
+        after:
+          // {}のときはundefinedにしない（{}はfalsy）
+          after != null
+            ? {
+                ...state.operations[idx].before,
+                ...after,
+              }
+            : undefined,
+      };
+      // TODO: 緑数字とかハイスピとか更新する
     },
     setOperationsComment(
       state,
