@@ -1,5 +1,5 @@
 import React from "react";
-import { OutlinedInput } from "@material-ui/core";
+import { TextField } from "@material-ui/core";
 
 import { actions, useSelector, useDispatch } from "stores";
 
@@ -16,8 +16,10 @@ export const SimulatorTableRowInput: React.FC<SimulatorTableRowInputProps> = (
   const dispatch = useDispatch();
 
   return (
-    <OutlinedInput
+    <TextField
       type="number"
+      variant="outlined"
+      label="白数字オフセット"
       value={value ?? 0}
       onChange={(event) => {
         dispatch(

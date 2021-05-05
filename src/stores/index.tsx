@@ -8,6 +8,7 @@ import { DeepPartial } from "utility-types";
 // import merge from "deepmerge";
 
 import { songs } from "utils/data";
+import { stateToHighSpeed, stateToGreen } from "utils/functions";
 
 type InitialState = {
   isFloating: boolean; // フローティングかどうか
@@ -36,7 +37,7 @@ export const operationArray = [
 
 type OperationState = {
   operation: typeof operationArray[number];
-  base: Pick<InitialState, "white" | "green">; // 基準となる状態
+  base: Pick<InitialState, "white" | "green" | "lift">; // 基準となる状態
   before: Omit<InitialState, "isClassic" | "greenRange">; // 操作前
   after?: Omit<InitialState, "isClassic" | "greenRange">; // 操作後
   value?: number; // 操作の値
@@ -50,18 +51,63 @@ type SimulatorState = {
   songIdx: number;
 };
 
-// ハイスピ*BPM = 600でサドプラ無しだと緑数字292
+const calcBase = (target: Omit<InitialState, "isClassic" | "greenRange">) => ({
+  white: target.white,
+  green: target.green,
+  lift: target.lift,
+});
+
+const calcBefore = (
+  target: Omit<InitialState, "isClassic" | "greenRange">,
+  songIdx: number,
+  idx: number,
+  isClassic: boolean
+) => ({
+  ...target,
+  ...(target.isFloating
+    ? {
+        highSpeed: stateToHighSpeed(target, songs[songIdx].sections[idx].bpm),
+      }
+    : {
+        green: stateToGreen(
+          target,
+          songs[songIdx].sections[idx].bpm,
+          isClassic
+        ),
+      }),
+});
 
 const resetOperations = (state: SimulatorState): OperationState[] => {
   const { isClassic, greenRange, ...before } = state.initial;
-  return songs[state.songIdx].sections.map((_) => ({
+  return songs[state.songIdx].sections.map((_, idx) => ({
     operation: operationArray[0],
-    base: {
-      white: before.white,
-      green: before.green,
-    },
-    before: before,
+    base: calcBase(before),
+    before: calcBefore(before, state.songIdx, idx, isClassic),
   }));
+};
+
+const calcOperations = (
+  state: SimulatorState,
+  idx: number,
+  reset?: boolean
+): OperationState[] => {
+  const { songIdx, initial, operations } = state;
+  const newOperations = operations.slice(0, idx);
+  for (let i = idx; i < operations.length; i++) {
+    const { isClassic, greenRange, ...before } = initial;
+    const target =
+      i === 0
+        ? before
+        : newOperations[i - 1].after ?? newOperations[i - 1].before;
+    // TODO: after計算
+    newOperations.push({
+      ...operations[i],
+      ...(reset && { operation: operationArray[0] }),
+      base: calcBase(target),
+      before: calcBefore(target, songIdx, i, isClassic),
+    });
+  }
+  return newOperations;
 };
 
 const simulatorSlice = createSlice({
@@ -109,9 +155,7 @@ const simulatorSlice = createSlice({
           ...initial.greenRange,
         },
       };
-      // TODO: 初期状態を再計算する処理
-      // TODO: ハイスピor緑数字を再計算する処理
-      if (reset) state.operations = resetOperations(state);
+      state.operations = calcOperations(state, 0, reset);
     },
     setOperations(
       state,
