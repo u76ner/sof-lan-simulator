@@ -94,16 +94,17 @@ const calcOperations = (
   const { songIdx, initial, operations } = state;
   const newOperations = operations.slice(0, idx);
   for (let i = idx; i < operations.length; i++) {
-    const { isClassic, greenRange, ...before } = initial;
+    const { isClassic, greenRange, ...initialBefore } = initial;
     const target =
       i === 0
-        ? before
+        ? initialBefore
         : newOperations[i - 1].after ?? newOperations[i - 1].before;
     // TODO: after計算
     newOperations.push({
       ...operations[i],
       ...(reset && { operation: operationArray[0] }),
-      base: calcBase(target),
+      // TODO: フローティング解除対応
+      base: calcBase(initialBefore),
       before: calcBefore(target, songIdx, i, isClassic),
     });
   }
