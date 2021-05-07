@@ -11,7 +11,7 @@ export const stateToHighSpeed = (
   (((600 * 292) / state.green / bpm) * (1000 - state.white - state.lift)) /
   1000;
 
-const stateToGreenWithClassic = (
+export const stateToGreen = (
   state: {
     white: number;
     lift: number;
@@ -21,26 +21,3 @@ const stateToGreenWithClassic = (
 ) =>
   ((600 / (bpm * state.highSpeed)) * 292 * (1000 - state.white - state.lift)) /
   1000;
-
-// TODO: クラシックじゃないとき
-const stateToGreenWithoutClassic = (
-  state: {
-    white: number;
-    lift: number;
-    highSpeed: number;
-  },
-  bpm: number
-) => 100000;
-
-export const stateToGreen = (
-  state: {
-    white: number;
-    lift: number;
-    highSpeed: number;
-  },
-  bpm: number,
-  isClassic: boolean
-) =>
-  isClassic
-    ? stateToGreenWithClassic(state, bpm)
-    : stateToGreenWithoutClassic(state, bpm);

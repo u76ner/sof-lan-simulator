@@ -51,8 +51,15 @@ type SimulatorState = {
   songIdx: number;
 };
 
-const calcBase = (target: Omit<InitialState, "isClassic" | "greenRange">) => ({
-  white: target.white,
+const calcBase = (
+  target: Omit<InitialState, "isClassic" | "greenRange">,
+  operation: OperationState["operation"],
+  offset?: number
+) => ({
+  white:
+    operation === operationArray[1] || operation === operationArray[6]
+      ? target.white + (offset ?? 0)
+      : target.white,
   green: target.green,
   lift: target.lift,
 });
@@ -60,53 +67,194 @@ const calcBase = (target: Omit<InitialState, "isClassic" | "greenRange">) => ({
 const calcBefore = (
   target: Omit<InitialState, "isClassic" | "greenRange">,
   songIdx: number,
-  idx: number,
+  sectionIdx: number,
   isClassic: boolean
 ) => ({
   ...target,
-  ...(target.isFloating
-    ? {
-        highSpeed: stateToHighSpeed(target, songs[songIdx].sections[idx].bpm),
-      }
-    : {
-        green: stateToGreen(
-          target,
-          songs[songIdx].sections[idx].bpm,
-          isClassic
-        ),
-      }),
+  // TODO: クラシックじゃないときの緑数字再計算
+  green: stateToGreen(target, songs[songIdx].sections[sectionIdx].bpm),
 });
 
 const resetOperations = (state: SimulatorState): OperationState[] => {
   const { isClassic, greenRange, ...before } = state.initial;
-  return songs[state.songIdx].sections.map((_, idx) => ({
-    operation: operationArray[0],
-    base: calcBase(before),
-    before: calcBefore(before, state.songIdx, idx, isClassic),
-  }));
+  const operations: OperationState[] = [];
+  for (let i = 0; i < songs[state.songIdx].sections.length; i++) {
+    const target = i === 0 ? before : operations[i - 1].before;
+    operations.push({
+      operation: operationArray[0],
+      base: calcBase(target, operationArray[0]),
+      before:
+        i === 0 && target.isFloating
+          ? {
+              ...target,
+              highSpeed: stateToHighSpeed(
+                target,
+                songs[state.songIdx].sections[0].bpm
+              ),
+            }
+          : calcBefore(target, state.songIdx, i, isClassic),
+    });
+  }
+  return operations;
+};
+
+const calcAfter = (
+  operation: OperationState,
+  songIdx: number,
+  sectionIdx: number,
+  isClassic: boolean
+): Omit<InitialState, "isClassic" | "greenRange"> => {
+  const after = { ...operation.before };
+  const bpm = songs[songIdx].sections[sectionIdx].bpm;
+
+  switch (operation.operation) {
+    case operationArray[1]: // 皿チョン
+      // TODO: SUD+飛ばした状態での皿チョン
+      after.white += operation.value ?? 0;
+      if (after.isFloating) {
+        after.green = operation.base.green;
+        after.highSpeed = stateToHighSpeed(after, bpm);
+      } else {
+        // TODO: クラシックじゃないときの緑数字再計算
+        after.green = stateToGreen(after, bpm);
+      }
+      break;
+    case operationArray[2]: // ハイスピ変更
+      if (after.isFloating) {
+        after.highSpeed += operation.value ?? 0;
+      } else {
+        after.highSpeed = operation.value ?? 1;
+      }
+      // TODO: クラシックじゃないときの緑数字再計算
+      after.green = stateToGreen(after, bpm);
+      break;
+    case operationArray[3]: // サドプラ消す
+      after.white = 0;
+      after.green = stateToGreen(after, bpm);
+      break;
+    case operationArray[4]: // サドプラ出す
+      after.white = operation.base.white;
+      if (after.isFloating) {
+        after.green = operation.base.green;
+        after.highSpeed = stateToHighSpeed(after, bpm);
+      } else {
+        // TODO: クラシックじゃないときの緑数字再計算
+        after.green = stateToGreen(after, bpm);
+      }
+      break;
+    case operationArray[5]: // サドプラ出し入れ
+      if (after.isFloating) {
+        after.green = operation.base.green;
+        after.highSpeed = stateToHighSpeed(after, bpm);
+      } else {
+        // TODO: クラシックじゃないときの緑数字再計算
+        after.green = stateToGreen(after, bpm);
+      }
+      break;
+    case operationArray[6]: // 皿チョン→ハイスピ変更
+      after.white += operation.value ?? 0;
+      if (after.isFloating) {
+        after.green = operation.base.green;
+        after.highSpeed = stateToHighSpeed(after, bpm);
+        after.highSpeed += operation.value2 ?? 0;
+      } else {
+        // TODO: クラシックじゃないときの緑数字再計算
+        after.highSpeed = operation.value2 ?? 1;
+      }
+      after.green = stateToGreen(after, bpm);
+      break;
+    default:
+      break;
+  }
+  return after;
+};
+
+const calcOperationsOnInit = (
+  state: SimulatorState,
+  reset?: boolean
+): OperationState[] => {
+  const { songIdx, initial, operations } = state;
+  const newOperations: OperationState[] = [];
+  for (let i = 0; i < operations.length; i++) {
+    const { isClassic, greenRange, ...initialBefore } = initial;
+    const target =
+      i === 0
+        ? initialBefore
+        : newOperations[i - 1].after ?? newOperations[i - 1].before;
+    const newOperation = {
+      ...operations[i],
+      ...(reset && { operation: operationArray[0] }),
+      // TODO: フローティング解除対応
+      base: calcBase(
+        initialBefore,
+        reset ? operationArray[0] : operations[i].operation,
+        operations[i].value
+      ),
+      before:
+        i === 0 && target.isFloating
+          ? {
+              ...target,
+              highSpeed: stateToHighSpeed(
+                target,
+                songs[songIdx].sections[0].bpm
+              ),
+            }
+          : calcBefore(target, songIdx, i, isClassic),
+    };
+    newOperation.after =
+      newOperation.operation !== operationArray[0]
+        ? calcAfter(newOperation, songIdx, i, isClassic)
+        : undefined;
+    newOperations.push(newOperation);
+  }
+  return newOperations;
 };
 
 const calcOperations = (
   state: SimulatorState,
-  idx: number,
-  reset?: boolean
+  sectionIdx: number,
+  operation: Partial<
+    Pick<SimulatorState["operations"][0], "operation" | "value" | "value2">
+  >
 ): OperationState[] => {
   const { songIdx, initial, operations } = state;
-  const newOperations = operations.slice(0, idx);
-  for (let i = idx; i < operations.length; i++) {
+  const newOperations = operations.slice(0, sectionIdx);
+  for (let i = sectionIdx; i < operations.length; i++) {
     const { isClassic, greenRange, ...initialBefore } = initial;
     const target =
       i === 0
         ? initialBefore
         : newOperations[i - 1].after ?? newOperations[i - 1].before;
     // TODO: after計算
-    newOperations.push({
+    let newOperation = {
       ...operations[i],
-      ...(reset && { operation: operationArray[0] }),
+    };
+    if (i === sectionIdx) {
+      if (operation.operation) {
+        newOperation = {
+          ...newOperation,
+          operation: operation.operation,
+          value: undefined,
+          value2: undefined,
+        };
+      } else {
+        newOperation = {
+          ...newOperation,
+          ...operation,
+        };
+      }
+    }
+    newOperation = {
+      ...newOperation,
       // TODO: フローティング解除対応
-      base: calcBase(initialBefore),
+      base: calcBase(initialBefore, newOperation.operation, newOperation.value),
       before: calcBefore(target, songIdx, i, isClassic),
-    });
+    };
+    newOperation.after =
+      newOperation.operation !== operationArray[0]
+        ? calcAfter(newOperation, songIdx, i, isClassic)
+        : undefined;
+    newOperations.push(newOperation);
   }
   return newOperations;
 };
@@ -156,25 +304,24 @@ const simulatorSlice = createSlice({
           ...initial.greenRange,
         },
       };
-      state.operations = calcOperations(state, 0, reset);
+      state.operations = calcOperationsOnInit(state, reset);
     },
     setOperations(
       state,
       action: PayloadAction<{
         idx: number;
         operation: Partial<
-          Pick<SimulatorState["operations"][0], "value" | "value2" | "comment">
+          Pick<
+            SimulatorState["operations"][0],
+            "operation" | "value" | "value2"
+          >
         >;
       }>
     ) {
       const { idx, operation } = action.payload;
-      state.operations[idx] = {
-        ...state.operations[idx],
-        ...operation,
-      };
-      // TODO: 緑数字とかハイスピとか更新する
+      state.operations = calcOperations(state, idx, operation);
     },
-    setOperationsOnInit(
+    setOperationsOperation(
       state,
       action: PayloadAction<{
         idx: number;
@@ -182,13 +329,17 @@ const simulatorSlice = createSlice({
       }>
     ) {
       const { idx, operation } = action.payload;
-      state.operations[idx] = {
-        ...state.operations[idx],
-        operation,
-        value: undefined,
-        value2: undefined,
-      };
-      // TODO: 緑数字とかハイスピとか更新する
+      state.operations = calcOperations(state, idx, { operation });
+    },
+    setOperationsComment(
+      state,
+      action: PayloadAction<{
+        idx: number;
+        comment: string;
+      }>
+    ) {
+      const { idx, comment } = action.payload;
+      state.operations[idx].comment = comment;
     },
   },
 });
