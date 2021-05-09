@@ -41,12 +41,16 @@ export const SimulatorTableRow: React.FC<SimulatorTableRowProps> = (props) => {
       : songs[songIdx].sections[idx].isEasyToOperate === "notBad"
       ? classes.bgNotBad
       : undefined;
-  const mainVariant = songs[songIdx].sections[idx].isMain ? "h6" : undefined;
+  const typoClassName = songs[songIdx].sections[idx].isMain
+    ? classes.typoBold
+    : undefined;
+  const isMain = songs[songIdx].sections[idx].isMain;
+  const mainVariant = isMain ? "h6" : undefined;
 
   return (
     <TableRow className={bgToOperate}>
       <TableCell align="center">
-        <Typography variant={mainVariant}>
+        <Typography className={typoClassName} variant={mainVariant}>
           {songs[songIdx].sections[idx].bpm}
         </Typography>
       </TableCell>
@@ -110,9 +114,15 @@ export const SimulatorTableRow: React.FC<SimulatorTableRowProps> = (props) => {
           <Typography
             className={
               operations[idx].before.green < initial.greenRange.lower
-                ? classes.typoRed
+                ? isMain
+                  ? classes.typoBoldRed
+                  : classes.typoRed
                 : operations[idx].before.green > initial.greenRange.upper
-                ? classes.typoBlue
+                ? isMain
+                  ? classes.typoBoldBlue
+                  : classes.typoBlue
+                : isMain
+                ? classes.typoBold
                 : undefined
             }
             variant={mainVariant}
@@ -121,15 +131,23 @@ export const SimulatorTableRow: React.FC<SimulatorTableRowProps> = (props) => {
           </Typography>
           {isInCondition(operations[idx].operation, [1, 2, 3, 4, 5, 6]) && (
             <>
-              <Typography variant={mainVariant}>↓</Typography>
+              <Typography className={typoClassName} variant={mainVariant}>
+                ↓
+              </Typography>
               <Typography
                 className={
                   (operations[idx].after?.green ?? 999) <
                   initial.greenRange.lower
-                    ? classes.typoRed
+                    ? isMain
+                      ? classes.typoBoldRed
+                      : classes.typoRed
                     : (operations[idx].after?.green ?? 0) >
                       initial.greenRange.upper
-                    ? classes.typoBlue
+                    ? isMain
+                      ? classes.typoBoldBlue
+                      : classes.typoBlue
+                    : isMain
+                    ? classes.typoBold
                     : undefined
                 }
                 variant={mainVariant}
@@ -145,12 +163,15 @@ export const SimulatorTableRow: React.FC<SimulatorTableRowProps> = (props) => {
       <TableCell align="center">
         <Box display="flex" flexDirection="column" alignItems="center">
           <Typography
+            className={typoClassName}
             variant={mainVariant}
           >{`${operations[idx].before.white}, ${operations[idx].before.lift}`}</Typography>
           {isInCondition(operations[idx].operation, [1, 3, 4, 6]) && (
             <>
-              <Typography variant={mainVariant}>↓</Typography>
-              <Typography variant={mainVariant}>
+              <Typography className={typoClassName} variant={mainVariant}>
+                ↓
+              </Typography>
+              <Typography className={typoClassName} variant={mainVariant}>
                 {`${operations[idx].after?.white}, ${operations[idx].after?.lift}`}
               </Typography>
             </>
@@ -159,7 +180,7 @@ export const SimulatorTableRow: React.FC<SimulatorTableRowProps> = (props) => {
       </TableCell>
       <TableCell align="center">
         <Box display="flex" flexDirection="column" alignItems="center">
-          <Typography variant={mainVariant}>
+          <Typography className={typoClassName} variant={mainVariant}>
             {operations[idx].before.highSpeed.toFixed(2)}
           </Typography>
           {isInCondition(
@@ -167,8 +188,10 @@ export const SimulatorTableRow: React.FC<SimulatorTableRowProps> = (props) => {
             operations[idx].after?.isFloating ? [1, 2, 4, 5, 6] : [2, 6]
           ) && (
             <>
-              <Typography variant={mainVariant}>↓</Typography>
-              <Typography variant={mainVariant}>
+              <Typography className={typoClassName} variant={mainVariant}>
+                ↓
+              </Typography>
+              <Typography className={typoClassName} variant={mainVariant}>
                 {operations[idx].after?.highSpeed.toFixed(2)}
               </Typography>
             </>
@@ -203,6 +226,17 @@ const useStyles = makeStyles((theme) => ({
     color: red[500],
   },
   typoBlue: {
+    color: blue[500],
+  },
+  typoBold: {
+    fontWeight: 700,
+  },
+  typoBoldRed: {
+    fontWeight: 700,
+    color: red[500],
+  },
+  typoBoldBlue: {
+    fontWeight: 700,
     color: blue[500],
   },
 }));
