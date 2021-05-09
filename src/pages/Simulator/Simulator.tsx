@@ -1,17 +1,19 @@
 import React from "react";
-import { Box } from "@material-ui/core";
+import { Box, Container, Typography } from "@material-ui/core";
 
 import { InitialInputs, SimulatorTable } from "components/Simulator";
 
 const Simulator: React.FC = () => {
   return (
     <Box display="flex" flexDirection="column">
-      <Box mb={4}>
+      <Typography variant="h5">初期入力</Typography>
+      <Container maxWidth={false}>
         <InitialInputs />
-      </Box>
-      <Box>
+      </Container>
+      <Typography variant="h5">操作</Typography>
+      <Container maxWidth={false}>
         <SimulatorTable />
-      </Box>
+      </Container>
     </Box>
   );
 };

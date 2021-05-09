@@ -5,10 +5,10 @@ export type Song = {
   sections: {
     bpm: number;
     // ある程度長く続くセクションかどうか
-    isMain: boolean;
+    isMain?: boolean;
     // ギアチェンしやすいか
-    // difficult: 厳しい、notBad: 数ノーツ捨てればできる、easy: 余裕
-    isEasyToOperate: "difficult" | "notBad" | "easy";
+    // notBad: 数ノーツ捨てればできる、easy: 余裕
+    isEasyToOperate?: "notBad" | "easy";
   }[];
 };
 
