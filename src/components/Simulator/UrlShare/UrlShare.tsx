@@ -20,7 +20,7 @@ export const UrlShare: React.FC<UrlShareProps> = (props) => {
       `${urlBase}?state=${encodeURIComponent(JSON.stringify(state))}`
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state]);
+  }, [urlBase, state]);
 
   return (
     <Box display="flex" gridGap={16}>
