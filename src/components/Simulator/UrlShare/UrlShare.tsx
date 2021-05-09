@@ -12,7 +12,6 @@ export const UrlShare: React.FC<UrlShareProps> = (props) => {
 
   useEffect(() => {
     const url = new URL(window.location.href);
-    console.log(url);
     setUrlBase(`${url.protocol}//${url.host}${url.pathname}`);
   }, []);
 
