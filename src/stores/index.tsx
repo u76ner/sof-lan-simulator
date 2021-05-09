@@ -52,16 +52,16 @@ export type SimulatorState = {
 };
 
 const calcBase = (
-  target: Omit<InitialState, "isClassic" | "greenRange">,
+  prevBase: Pick<InitialState, "white" | "green" | "lift">,
   operation: OperationState["operation"],
   offset?: number
 ) => ({
   white:
     operation === operationArray[1] || operation === operationArray[6]
-      ? target.white + (offset ?? 0)
-      : target.white,
-  green: target.green,
-  lift: target.lift,
+      ? prevBase.white + (offset ?? 0)
+      : prevBase.white,
+  green: prevBase.green,
+  lift: prevBase.lift,
 });
 
 const calcBefore = (
@@ -77,12 +77,14 @@ const calcBefore = (
 
 const resetOperations = (state: SimulatorState): OperationState[] => {
   const { isClassic, greenRange, ...before } = state.initial;
+  const { isFloating, highSpeed, ...base } = before;
   const operations: OperationState[] = [];
   for (let i = 0; i < songs[state.songIdx].sections.length; i++) {
     const target = i === 0 ? before : operations[i - 1].before;
+    const prevBase = i === 0 ? base : operations[i - 1].base;
     operations.push({
       operation: operationArray[0],
-      base: calcBase(target, operationArray[0]),
+      base: calcBase(prevBase, operationArray[0]),
       before:
         i === 0 && target.isFloating
           ? {
@@ -177,16 +179,18 @@ const calcOperationsOnInit = (
   const newOperations: OperationState[] = [];
   for (let i = 0; i < operations.length; i++) {
     const { isClassic, greenRange, ...initialBefore } = initial;
+    const { isFloating, highSpeed, ...base } = initialBefore;
     const target =
       i === 0
         ? initialBefore
         : newOperations[i - 1].after ?? newOperations[i - 1].before;
+    const prevBase = i === 0 ? base : operations[i - 1].base;
     const newOperation = {
       ...operations[i],
       ...(reset && { operation: operationArray[0] }),
       // TODO: フローティング解除対応
       base: calcBase(
-        initialBefore,
+        prevBase,
         reset ? operationArray[0] : operations[i].operation,
         operations[i].value
       ),
@@ -221,10 +225,12 @@ const calcOperations = (
   const newOperations = operations.slice(0, sectionIdx);
   for (let i = sectionIdx; i < operations.length; i++) {
     const { isClassic, greenRange, ...initialBefore } = initial;
+    const { isFloating, highSpeed, ...base } = initialBefore;
     const target =
       i === 0
         ? initialBefore
         : newOperations[i - 1].after ?? newOperations[i - 1].before;
+    const prevBase = i === 0 ? base : operations[i - 1].base;
     // TODO: after計算
     let newOperation = {
       ...operations[i],
@@ -247,7 +253,7 @@ const calcOperations = (
     newOperation = {
       ...newOperation,
       // TODO: フローティング解除対応
-      base: calcBase(target, newOperation.operation, newOperation.value),
+      base: calcBase(prevBase, newOperation.operation, newOperation.value),
       before: calcBefore(target, songIdx, i, isClassic),
     };
     newOperation.after =
