@@ -282,7 +282,19 @@ const simulatorSlice = createSlice({
       return action.payload;
     },
     setSong(state, action: PayloadAction<SimulatorState["songIdx"]>) {
-      state.songIdx = action.payload;
+      const songIdx = action.payload;
+      state.songIdx = songIdx;
+      if (state.initial.isFloating) {
+        state.initial.highSpeed = stateToHighSpeed(
+          state.initial,
+          songs[songIdx].sections[0].bpm
+        );
+      } else {
+        state.initial.green = stateToGreen(
+          state.initial,
+          songs[songIdx].sections[0].bpm
+        );
+      }
       state.operations = resetOperations(state);
     },
     setInitial(
@@ -295,7 +307,7 @@ const simulatorSlice = createSlice({
       const { initial, reset } = action.payload;
       // FIXME: deepmergeがうまくいかない（mergeの引数がDeepPartialではなくPartialのため）
       // state.initial = merge(state.initial, action.payload.initial);
-      state.initial = {
+      const newInitial = {
         ...state.initial,
         ...initial,
         greenRange: {
@@ -303,17 +315,22 @@ const simulatorSlice = createSlice({
           ...initial.greenRange,
         },
       };
-      if (state.initial.isFloating) {
-        state.initial.highSpeed = stateToHighSpeed(
-          state.initial,
-          songs[state.songIdx].sections[0].bpm
-        );
-      } else {
-        state.initial.green = stateToGreen(
-          state.initial,
-          songs[state.songIdx].sections[0].bpm
-        );
-      }
+      state.initial = {
+        ...newInitial,
+        ...(newInitial.isFloating
+          ? {
+              highSpeed: stateToHighSpeed(
+                newInitial,
+                songs[state.songIdx].sections[0].bpm
+              ),
+            }
+          : {
+              green: stateToGreen(
+                newInitial,
+                songs[state.songIdx].sections[0].bpm
+              ),
+            }),
+      };
       state.operations = calcOperationsOnInit(state, reset);
     },
     setOperations(
