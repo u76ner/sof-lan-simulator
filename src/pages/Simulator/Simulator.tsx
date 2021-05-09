@@ -1,19 +1,37 @@
-import React from "react";
-import { Box, Container, Typography } from "@material-ui/core";
+import React, { useEffect } from "react";
+import { Box, Typography } from "@material-ui/core";
+import queryString from "query-string";
 
-import { InitialInputs, SimulatorTable } from "components/Simulator";
+import { actions, useDispatch, SimulatorState } from "stores";
+import { InitialInputs, UrlShare, SimulatorTable } from "components/Simulator";
 
 const Simulator: React.FC = () => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const { state: urlState } = queryString.parse(window.location.search) as {
+      state: string;
+    };
+    if (urlState) {
+      dispatch(actions.setDefaultState(JSON.parse(urlState) as SimulatorState));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <Box display="flex" flexDirection="column">
       <Typography variant="h5">初期入力</Typography>
-      <Container maxWidth={false}>
+      <Box mb={4} px={2}>
         <InitialInputs />
-      </Container>
+      </Box>
+      <Typography variant="h5">結果をシェア</Typography>
+      <Box mb={4} px={2}>
+        <UrlShare />
+      </Box>
       <Typography variant="h5">操作</Typography>
-      <Container maxWidth={false}>
+      <Box px={2}>
         <SimulatorTable />
-      </Container>
+      </Box>
     </Box>
   );
 };

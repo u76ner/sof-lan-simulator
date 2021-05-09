@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  makeStyles,
   TableRow,
   TableCell,
   Typography,
@@ -9,6 +10,7 @@ import {
   OutlinedInput,
   Box,
 } from "@material-ui/core";
+import { yellow, lightBlue, red, blue } from "@material-ui/core/colors";
 
 import { operationArray, actions, useSelector, useDispatch } from "stores";
 import { songs } from "utils/data";
@@ -27,14 +29,26 @@ const isInCondition = (
 export const SimulatorTableRow: React.FC<SimulatorTableRowProps> = (props) => {
   const { idx } = props;
 
-  const { songIdx, operations } = useSelector((state) => state);
+  const classes = useStyles();
+
+  const { songIdx, operations, initial } = useSelector((state) => state);
   const currentOperation = operations[idx].operation;
   const dispatch = useDispatch();
 
+  const bgToOperate =
+    songs[songIdx].sections[idx].isEasyToOperate === "easy"
+      ? classes.bgEasy
+      : songs[songIdx].sections[idx].isEasyToOperate === "notBad"
+      ? classes.bgNotBad
+      : undefined;
+  const mainVariant = songs[songIdx].sections[idx].isMain ? "h6" : undefined;
+
   return (
-    <TableRow>
+    <TableRow className={bgToOperate}>
       <TableCell align="center">
-        <Typography>{songs[songIdx].sections[idx].bpm}</Typography>
+        <Typography variant={mainVariant}>
+          {songs[songIdx].sections[idx].bpm}
+        </Typography>
       </TableCell>
       <TableCell align="center">
         <FormControl variant="outlined">
@@ -93,11 +107,33 @@ export const SimulatorTableRow: React.FC<SimulatorTableRowProps> = (props) => {
       </TableCell>
       <TableCell align="center">
         <Box display="flex" flexDirection="column" alignItems="center">
-          <Typography>{Math.floor(operations[idx].before.green)}</Typography>
+          <Typography
+            className={
+              operations[idx].before.green < initial.greenRange.lower
+                ? classes.typoRed
+                : operations[idx].before.green > initial.greenRange.upper
+                ? classes.typoBlue
+                : undefined
+            }
+            variant={mainVariant}
+          >
+            {Math.floor(operations[idx].before.green)}
+          </Typography>
           {isInCondition(operations[idx].operation, [1, 2, 3, 4, 5, 6]) && (
             <>
-              <Typography>↓</Typography>
-              <Typography>
+              <Typography variant={mainVariant}>↓</Typography>
+              <Typography
+                className={
+                  (operations[idx].after?.green ?? 999) <
+                  initial.greenRange.lower
+                    ? classes.typoRed
+                    : (operations[idx].after?.green ?? 0) >
+                      initial.greenRange.upper
+                    ? classes.typoBlue
+                    : undefined
+                }
+                variant={mainVariant}
+              >
                 {Math.floor(
                   operations[idx].after?.green ?? operations[idx].before.green
                 )}
@@ -108,11 +144,13 @@ export const SimulatorTableRow: React.FC<SimulatorTableRowProps> = (props) => {
       </TableCell>
       <TableCell align="center">
         <Box display="flex" flexDirection="column" alignItems="center">
-          <Typography>{`${operations[idx].before.white}, ${operations[idx].before.lift}`}</Typography>
+          <Typography
+            variant={mainVariant}
+          >{`${operations[idx].before.white}, ${operations[idx].before.lift}`}</Typography>
           {isInCondition(operations[idx].operation, [1, 3, 4, 6]) && (
             <>
-              <Typography>↓</Typography>
-              <Typography>
+              <Typography variant={mainVariant}>↓</Typography>
+              <Typography variant={mainVariant}>
                 {`${operations[idx].after?.white}, ${operations[idx].after?.lift}`}
               </Typography>
             </>
@@ -121,14 +159,16 @@ export const SimulatorTableRow: React.FC<SimulatorTableRowProps> = (props) => {
       </TableCell>
       <TableCell align="center">
         <Box display="flex" flexDirection="column" alignItems="center">
-          <Typography>{operations[idx].before.highSpeed.toFixed(2)}</Typography>
+          <Typography variant={mainVariant}>
+            {operations[idx].before.highSpeed.toFixed(2)}
+          </Typography>
           {isInCondition(
             operations[idx].operation,
             operations[idx].after?.isFloating ? [1, 2, 4, 5, 6] : [2, 6]
           ) && (
             <>
-              <Typography>↓</Typography>
-              <Typography>
+              <Typography variant={mainVariant}>↓</Typography>
+              <Typography variant={mainVariant}>
                 {operations[idx].after?.highSpeed.toFixed(2)}
               </Typography>
             </>
@@ -151,3 +191,18 @@ export const SimulatorTableRow: React.FC<SimulatorTableRowProps> = (props) => {
     </TableRow>
   );
 };
+
+const useStyles = makeStyles((theme) => ({
+  bgEasy: {
+    backgroundColor: yellow[100],
+  },
+  bgNotBad: {
+    backgroundColor: lightBlue[100],
+  },
+  typoRed: {
+    color: red[500],
+  },
+  typoBlue: {
+    color: blue[500],
+  },
+}));

@@ -45,7 +45,7 @@ type OperationState = {
   comment?: string;
 };
 
-type SimulatorState = {
+export type SimulatorState = {
   initial: InitialState;
   operations: OperationState[]; // 状態
   songIdx: number;
@@ -247,7 +247,7 @@ const calcOperations = (
     newOperation = {
       ...newOperation,
       // TODO: フローティング解除対応
-      base: calcBase(initialBefore, newOperation.operation, newOperation.value),
+      base: calcBase(target, newOperation.operation, newOperation.value),
       before: calcBefore(target, songIdx, i, isClassic),
     };
     newOperation.after =
@@ -279,7 +279,6 @@ const simulatorSlice = createSlice({
   } as SimulatorState,
   reducers: {
     setDefaultState(state, action: PayloadAction<SimulatorState>) {
-      // state.sections = [];
       return action.payload;
     },
     setSong(state, action: PayloadAction<SimulatorState["songIdx"]>) {
@@ -304,6 +303,17 @@ const simulatorSlice = createSlice({
           ...initial.greenRange,
         },
       };
+      if (state.initial.isFloating) {
+        state.initial.highSpeed = stateToHighSpeed(
+          state.initial,
+          songs[state.songIdx].sections[0].bpm
+        );
+      } else {
+        state.initial.green = stateToGreen(
+          state.initial,
+          songs[state.songIdx].sections[0].bpm
+        );
+      }
       state.operations = calcOperationsOnInit(state, reset);
     },
     setOperations(
