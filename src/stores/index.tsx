@@ -314,6 +314,14 @@ const simulatorSlice = createSlice({
           ...state.initial.greenRange,
           ...initial.greenRange,
         },
+        ...(initial.isFloating != null &&
+          (initial.isFloating
+            ? {
+                green: 300,
+              }
+            : {
+                highSpeed: 1.0,
+              })),
       };
       state.initial = {
         ...newInitial,
