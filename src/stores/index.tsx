@@ -76,11 +76,11 @@ const calcBefore = (
 });
 
 const resetOperations = (state: SimulatorState): OperationState[] => {
-  const { isClassic, greenRange, ...before } = state.initial;
-  const { isFloating, highSpeed, ...base } = before;
+  const { isClassic, greenRange, ...initialBefore } = state.initial;
+  const { isFloating, highSpeed, ...base } = initialBefore;
   const operations: OperationState[] = [];
   for (let i = 0; i < songs[state.songIdx].sections.length; i++) {
-    const target = i === 0 ? before : operations[i - 1].before;
+    const target = i === 0 ? initialBefore : operations[i - 1].before;
     const prevBase = i === 0 ? base : operations[i - 1].base;
     operations.push({
       operation: operationArray[0],
@@ -184,7 +184,7 @@ const calcOperationsOnInit = (
       i === 0
         ? initialBefore
         : newOperations[i - 1].after ?? newOperations[i - 1].before;
-    const prevBase = i === 0 ? base : operations[i - 1].base;
+    const prevBase = i === 0 ? base : newOperations[i - 1].base;
     const newOperation = {
       ...operations[i],
       ...(reset && { operation: operationArray[0] }),
@@ -230,7 +230,7 @@ const calcOperations = (
       i === 0
         ? initialBefore
         : newOperations[i - 1].after ?? newOperations[i - 1].before;
-    const prevBase = i === 0 ? base : operations[i - 1].base;
+    const prevBase = i === 0 ? base : newOperations[i - 1].base;
     // TODO: after計算
     let newOperation = {
       ...operations[i],
