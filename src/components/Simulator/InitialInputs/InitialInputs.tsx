@@ -29,7 +29,7 @@ const LABEL_WIDTH = 220;
 export const InitialInputs: React.FC<InitialInputsProps> = () => {
   const classes = useStyles();
 
-  const { initial, songIdx } = useSelector((state) => state);
+  const { initial, songIdx, test } = useSelector((state) => state);
   const dispatch = useDispatch();
 
   return (
@@ -46,11 +46,13 @@ export const InitialInputs: React.FC<InitialInputsProps> = () => {
               dispatch(actions.setSong(parseInt(event.target.value as string)));
             }}
           >
-            {songs.map((song, idx) => (
-              <MenuItem key={song.title} value={idx}>
-                {song.title}
-              </MenuItem>
-            ))}
+            {songs
+              .filter((song) => (test ? true : !song.test))
+              .map((song, idx) => (
+                <MenuItem key={song.title} value={idx}>
+                  {song.title}
+                </MenuItem>
+              ))}
           </Select>
         </FormControl>
       </Box>

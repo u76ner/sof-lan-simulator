@@ -1,7 +1,9 @@
 import { op31JojoSPA } from "./op31JojoSPA";
+import { saberWingSPA } from "./saberWingSPA";
 
 export type Song = {
   title: string;
+  test?: boolean;
   sections: {
     bpm: number;
     // ある程度長く続くセクションかどうか
@@ -18,4 +20,5 @@ export const songs: Song[] = [
     sections: [],
   },
   op31JojoSPA,
+  saberWingSPA,
 ];

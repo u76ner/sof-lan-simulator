@@ -49,6 +49,7 @@ export type SimulatorState = {
   initial: InitialState;
   operations: OperationState[]; // 状態
   songIdx: number;
+  test?: boolean;
 };
 
 const calcBase = (
@@ -290,16 +291,18 @@ const simulatorSlice = createSlice({
     setSong(state, action: PayloadAction<SimulatorState["songIdx"]>) {
       const songIdx = action.payload;
       state.songIdx = songIdx;
-      if (state.initial.isFloating) {
-        state.initial.highSpeed = stateToHighSpeed(
-          state.initial,
-          songs[songIdx].sections[0].bpm
-        );
-      } else {
-        state.initial.green = stateToGreen(
-          state.initial,
-          songs[songIdx].sections[0].bpm
-        );
+      if (songs[songIdx].sections.length) {
+        if (state.initial.isFloating) {
+          state.initial.highSpeed = stateToHighSpeed(
+            state.initial,
+            songs[songIdx].sections[0].bpm
+          );
+        } else {
+          state.initial.green = stateToGreen(
+            state.initial,
+            songs[songIdx].sections[0].bpm
+          );
+        }
       }
       state.operations = resetOperations(state);
     },
