@@ -1,4 +1,5 @@
 import { op31JojoSPA } from "./op31JojoSPA";
+import { spukwalzerSPA } from "./supkwalzerSPA";
 import { saberWingSPA } from "./saberWingSPA";
 
 export type Song = {
@@ -20,5 +21,6 @@ export const songs: Song[] = [
     sections: [],
   },
   op31JojoSPA,
+  spukwalzerSPA,
   saberWingSPA,
 ];
