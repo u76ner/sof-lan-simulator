@@ -3,7 +3,12 @@ import { Box, Typography } from "@material-ui/core";
 import queryString from "query-string";
 
 import { actions, useDispatch, SimulatorState } from "stores";
-import { InitialInputs, UrlShare, SimulatorTable } from "components/Simulator";
+import {
+  InitialInputs,
+  UrlShare,
+  Legend,
+  SimulatorTable,
+} from "components/Simulator";
 
 const Simulator: React.FC = () => {
   const dispatch = useDispatch();
@@ -27,6 +32,9 @@ const Simulator: React.FC = () => {
       <Typography variant="h5">結果をシェア</Typography>
       <Box mb={4} px={2}>
         <UrlShare />
+      </Box>
+      <Box mb={4} px={2}>
+        <Legend />
       </Box>
       <Typography variant="h5">操作</Typography>
       <Box px={2}>
