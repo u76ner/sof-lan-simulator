@@ -1,7 +1,7 @@
 import { Song } from ".";
 
 export const op31JojoSPA: Song = {
-  title: "op.31 叙情(SPA)",
+  title: "op.31 叙情",
   sections: [
     {
       bpm: 180,
