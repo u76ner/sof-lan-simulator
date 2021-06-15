@@ -1,7 +1,7 @@
 import { Song } from ".";
 
 export const spukwalzerSPA: Song = {
-  title: "二人ノ廃城幽踊宴",
+  title: "二人ノ廃城幽踊宴(SPA)",
   sections: [
     {
       bpm: 290,
