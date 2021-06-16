@@ -2,7 +2,7 @@ import { op31JojoSPA } from "./op31JojoSPA";
 import { spukwalzerSPA } from "./supkwalzerSPA";
 import { ongakuSPA } from "./ongakuSPA";
 import { session9SPA } from "./session9SPA";
-import { fiveOneOneSPA } from "./511SPA";
+import { fiveOneOneSPA } from "./fiveOneOneSPA";
 
 import { saberWingSPA } from "./saberWingSPA";
 
