@@ -3,6 +3,7 @@ import { spukwalzerSPA } from "./supkwalzerSPA";
 import { ongakuSPA } from "./ongakuSPA";
 import { session9SPA } from "./session9SPA";
 import { fiveOneOneSPA } from "./fiveOneOneSPA";
+import { dayDreamSPA } from "./dayDreamSPA";
 
 import { saberWingSPA } from "./saberWingSPA";
 
@@ -29,6 +30,7 @@ export const songs: Song[] = [
   ongakuSPA,
   session9SPA,
   fiveOneOneSPA,
+  dayDreamSPA,
   // test
   saberWingSPA,
 ];
