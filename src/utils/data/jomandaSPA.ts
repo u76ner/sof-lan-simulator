@@ -1,0 +1,31 @@
+import { Song } from ".";
+
+export const jomandaSPA: Song = {
+  title: "JOMANDA(簡易版)",
+  sections: [
+    { bpm: 195 },
+    { bpm: 160 },
+    { bpm: 140 },
+    { bpm: 120 },
+    { bpm: 90 },
+    { bpm: 95 },
+    { bpm: 100 },
+    { bpm: 110 },
+    { bpm: 120 },
+    { bpm: 130 },
+    { bpm: 140 },
+    { bpm: 150 },
+    { bpm: 160 },
+    { bpm: 170 },
+    { bpm: 180 },
+    { bpm: 190 },
+    { bpm: 200 },
+    { bpm: 210 },
+    { bpm: 220 },
+    { bpm: 240 },
+    { bpm: 250 },
+    { bpm: 270 },
+    { bpm: 300 },
+    { bpm: 195 },
+  ],
+};
