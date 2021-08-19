@@ -2,7 +2,6 @@ import { Song } from ".";
 
 export const marieAntoinetteSPA: Song = {
   title: "Marie Antoinette(SPA)",
-  test: true,
   sections: [
     {
       bpm: 215,
