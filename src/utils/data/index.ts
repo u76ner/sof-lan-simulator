@@ -6,7 +6,7 @@ import { session9SPA } from "./session9SPA";
 import { dayDreamSPA } from "./dayDreamSPA";
 import { jomandaSPA } from "./jomandaSPA";
 import { marieAntoinetteSPA } from "./marieAntoinetteSPA";
-import { kaijinSPA } from "./kaijinSPA";
+// import { kaijinSPA } from "./kaijinSPA";
 import { zaikaNoSeidoSPA } from "./zaikaNoSeidoSPA";
 
 import { saberWingSPA } from "./saberWingSPA";
@@ -37,7 +37,7 @@ export const songs: Song[] = [
   dayDreamSPA,
   jomandaSPA,
   marieAntoinetteSPA,
-  kaijinSPA,
+  // kaijinSPA,
   zaikaNoSeidoSPA,
 
   // test
