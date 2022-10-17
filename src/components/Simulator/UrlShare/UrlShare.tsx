@@ -1,9 +1,39 @@
 import React, { useState, useEffect } from "react";
 import { Box, Button, OutlinedInput } from "@material-ui/core";
+import * as XLSX from "xlsx";
 
-import { useSelector } from "stores";
+import { useSelector, SimulatorState } from "stores";
+import { songs } from "utils/data";
 
 type UrlShareProps = {};
+
+const exportXlsx = (state: SimulatorState) => {
+  const song = songs[state.songIdx];
+
+  const workbook = XLSX.utils.book_new();
+
+  workbook.Props = {
+    Title: song.title,
+  };
+
+  workbook.SheetNames.push("シート1");
+
+  const worksheet = XLSX.utils.aoa_to_sheet([
+    [
+      "BPM",
+      "操作",
+      "操作の値",
+      "緑数字",
+      "白数字, LIFT",
+      "ハイスピード",
+      "コメント",
+    ],
+  ]);
+
+  workbook.Sheets["シート1"] = worksheet;
+
+  XLSX.writeFile(workbook, song.title);
+};
 
 export const UrlShare: React.FC<UrlShareProps> = (props) => {
   const state = useSelector((state) => state);

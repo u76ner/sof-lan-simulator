@@ -34,6 +34,9 @@ const Simulator: React.FC = () => {
         <UrlShare />
       </Box>
       <Box mb={4} px={2}>
+        <UrlShare />
+      </Box>
+      <Box mb={4} px={2}>
         <Legend />
       </Box>
       <Typography variant="h5">操作</Typography>
