@@ -112,7 +112,6 @@ export const zaikaNoSeidoSPA: Song = {
     },
     {
       bpm: 40,
-      isEasyToOperate: "notBad",
     },
     {
       bpm: 80,
